@@ -4,11 +4,7 @@ AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
 
 
-local loadout = {"weapon_physgun",
-				"weapon_physcannon",
-				"gmod_tool",
-				"gmod_camera"
-				}
+local loadout = {"weapon_physgun", "weapon_physcannon", "gmod_tool", "gmod_camera" }
 
 function GM:PlayerLoadout(ply)
 	for k,v in pairs(loadout) do
@@ -20,15 +16,23 @@ end
 
 util.AddNetworkString("BBSTimer")
 
-local function sendtime()
+local function sendtime(ply) --Send the timer time to the client
 	local roundtimer = math.floor(timer.TimeLeft("RoundTimer"))
+
 	net.Start("BBSTimer")
 		net.WriteInt(roundtimer, 32)
-	net.Broadcast()
-	print(roundtimer)
+	net.Send(ply)
 end
 
 hook.Add("PlayerInitialSpawn", "sendroundtimer", sendtime)
+
+local function broadcasttime() --Broadcast the timer time to everyone
+	local roundtimer = math.floor(timer.TimeLeft("RoundTimer"))
+
+	net.Start("BBSTimer")
+		net.WriteInt(roundtimer, 32)
+	net.Broadcast()
+end
 
 function BBS.StartRoundTimer()
 	local roundstate = GetGlobalInt("RoundState")
@@ -51,5 +55,5 @@ function BBS.StartRoundTimer()
 			BBS.StartRoundTimer()
 		end)
 	end
-	sendtime()
+	broadcasttime()
 end

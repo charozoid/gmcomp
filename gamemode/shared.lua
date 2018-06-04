@@ -7,6 +7,7 @@ DeriveGamemode( "sandbox" )
 
 BBS = {}
 
+--Setting round timers
 BBS.PrebuildTimer = 10
 BBS.BuildTimer = 10
 BBS.VoteTimer = 10
