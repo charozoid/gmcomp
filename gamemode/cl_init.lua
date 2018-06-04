@@ -9,10 +9,10 @@ function GM:HUDPaint()
 	-- name: nicephases[GetGlobalInt("RoundState")]
 	if timer.Exists("RoundTimer") then
 		local wid, tall = 200, 30
-		smoother = Lerp(10*FrameTime(),smoother,(GAMEMODE:GetPhaseTotalTime(GetGlobalInt("RoundState"))-math.ceil(timer.TimeLeft("RoundTimer")))/GAMEMODE:GetPhaseTotalTime(GetGlobalInt("RoundState"))*wid)
+		smoother = Lerp(10*FrameTime(),smoother,(BBS:GetPhaseTotalTime(GetGlobalInt("RoundState"))-math.ceil(timer.TimeLeft("RoundTimer")))/BBS:GetPhaseTotalTime(GetGlobalInt("RoundState"))*wid)
 		surface.SetDrawColor(30,30,30)
 		surface.DrawRect(5,5,wid,tall)
-		if math.ceil(timer.TimeLeft("RoundTimer"))<GAMEMODE:GetPhaseTotalTime(GetGlobalInt("RoundState"))/4 then
+		if math.ceil(timer.TimeLeft("RoundTimer"))<BBS:GetPhaseTotalTime(GetGlobalInt("RoundState"))/4 then
 			surface.SetDrawColor(167,17,17)
 		else
 			surface.SetDrawColor(68,164,68)
