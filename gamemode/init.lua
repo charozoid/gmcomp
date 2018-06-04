@@ -1,7 +1,9 @@
 include("shared.lua")
 
 AddCSLuaFile("shared.lua")
+
 AddCSLuaFile("cl_init.lua")
+AddCSLuaFile("cl_fonts.lua")
 
 
 local loadout = {"weapon_physgun", "weapon_physcannon", "gmod_tool", "gmod_camera" }

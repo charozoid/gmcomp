@@ -19,7 +19,8 @@ PHASE_VOTE = 3
 
 function GM:Initialize()
 	SetGlobalInt("RoundState", PHASE_PREBUILD)
-
+	SetGlobalString("Theme", "")
+	
 	if SERVER then
 		BBS.StartRoundTimer()
 	end

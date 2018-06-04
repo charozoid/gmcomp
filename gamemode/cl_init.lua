@@ -1,10 +1,5 @@
 include("shared.lua")
-
-surface.CreateFont( "Arial24", {
-	font = "Arial", 
-	size = 24,
-	weight = 500,
-} )
+include("cl_fonts.lua")
 
 local nicephases = {"Prebuild Phase", "Build Phase", "Judging Phase"}
 
