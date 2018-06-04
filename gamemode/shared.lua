@@ -19,7 +19,11 @@ PHASE_PREBUILD = 1
 PHASE_BUILD = 2
 PHASE_VOTE = 3
 
-function GM:GetPhaseTotalTime(phase)
+--[[
+	BBS:GetPhaseTotalTime(int phase)
+	Returns given phase's total phase time.
+--]]
+function BBS:GetPhaseTotalTime(phase)
 	if phase==1 then
 		return BBS.PrebuildTimer
 	elseif phase==2 then
