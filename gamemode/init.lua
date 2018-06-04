@@ -61,7 +61,6 @@ function BBS.StartRoundTimer()
 		end)
 	end
 	broadcasttime()
-
 end
 --[[
 	BBS:RandomTheme
@@ -105,4 +104,22 @@ end
 ]]--
 function BBS:SetTheme(id)
 	SetGlobalInt("ThemeID", id)
+end
+
+--[[
+	BBS:ChooseRandomProps(int number)
+	Choose a number of props randomly from the main props table
+]]--
+
+util.AddNetworkString("BBSPropList")
+
+function BBS:ChooseRandomProps(number)
+	self.AllowedProps = {}
+	net.Start("BBSPropList")
+	for i=1,number do
+		local randpropid = math.random(#self.PropList)
+		net.WriteInt(randpropid, 16)
+		self.AllowedProps[i] = self.PropList[randpropid]
+	end
+	net.Broadcast()
 end

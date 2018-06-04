@@ -35,3 +35,9 @@ net.Receive("BBSTimer", function()
 		
 	end)
 end)
+
+net.Receive("BBSPropList", function(len)
+	for i=1, len do
+		BBS.AllowedProps[i] = BBS.PropList[net.ReadInt(16)]
+	end
+end)
