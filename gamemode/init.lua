@@ -67,7 +67,7 @@ end
 	BBS:RandomTheme
 	Returns random theme
 ]]--
-function BBS:RandomTheme()
+function BBS:GetRandomTheme()
 	local int = math.random(#self.Themes)
 	SetGlobalInt("ThemeID", int)
 end
@@ -89,4 +89,20 @@ function BBS:NextPhase()
 		SetGlobalInt("RoundState", PHASE_PREBUILD)
 	end
 	self.StartRoundTimer()
+end
+
+--[[
+	BBS:SetGamemode(int gamemode ID)
+	Sets the current gamemode
+]]--
+function BBS:SetGamemode(id)
+	SetGlobalInt("Gamemode", id)
+end
+
+--[[
+	BBS:SetTheme(int themeid)
+	Sets the current theme
+]]--
+function BBS:SetTheme(id)
+	SetGlobalInt("ThemeID", id)
 end

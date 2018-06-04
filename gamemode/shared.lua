@@ -39,6 +39,7 @@ function BBS:Initialize()
 	
 	if SERVER then
 		self:SetGamemode(1)
+		self:SetTheme(1)
 		self.StartRoundTimer()	
 	end
 
@@ -67,20 +68,19 @@ end
 
 BBS:AddTheme("Car", {"wheel"}, nil)
 
+
 --[[
-	BBS:SetGamemode(int gamemode ID)
-	Sets the current gamemode
-]]--
-function BBS:SetGamemode(id)
-	SetGlobalInt("Gamemode", id)
-	local gamem = self.Gamemodes[id]
-	self.BuildTimer = gamem.buildtime
-	print(self.BuildTimer)
-end
---[[
-	BBS:SetGamemode(int gamemode ID)
+	BBS:GetGamemode()
 	Returns the current gamemode table
 ]]--
 function BBS:GetGamemode()
 	return self.Gamemodes[GetGlobalInt("Gamemode")]
+end
+
+--[[
+	BBS:GetTheme()
+	Returns the current selected theme
+]]--
+function BBS:GetTheme()
+	return self.Themes[GetGlobalInt("ThemeID")]
 end
