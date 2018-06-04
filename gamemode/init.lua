@@ -28,7 +28,7 @@ local function sendtime()
 	print(roundtimer)
 end
 
---hook.Add("PlayerInitialSpawn", "sendroundtimer", sendtime)
+hook.Add("PlayerInitialSpawn", "sendroundtimer", sendtime)
 
 function BBS.StartRoundTimer()
 	local roundstate = GetGlobalInt("RoundState")
