@@ -14,7 +14,6 @@ function GM:HUDPaint()
 	end
 end
 
-
 net.Receive("BBSTimer", function()
 	local time = net.ReadInt(32)
 	if timer.Exists("RoundTimer") then
