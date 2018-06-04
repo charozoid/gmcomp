@@ -9,6 +9,11 @@ BBS = {}
 BBS.Gamemodes = {}
 BBS.Themes = {}
 
+--Setting round timers
+BBS.PrebuildTimer = 10
+BBS.BuildTimer = 10
+BBS.VoteTimer = 10
+
 --Setting global round states
 PHASE_PREBUILD = 1
 PHASE_BUILD = 2
@@ -61,3 +66,21 @@ function BBS:AddTheme(name, customtools, customprops)
 end
 
 BBS:AddTheme("Car", {"wheel"}, nil)
+
+--[[
+	BBS:SetGamemode(int gamemode ID)
+	Sets the current gamemode
+]]--
+function BBS:SetGamemode(id)
+	SetGlobalInt("Gamemode", id)
+	local gamem = self.Gamemodes[id]
+	self.BuildTimer = gamem.buildtime
+	print(self.BuildTimer)
+end
+--[[
+	BBS:SetGamemode(int gamemode ID)
+	Returns the current gamemode table
+]]--
+function BBS:GetGamemode()
+	return self.Gamemodes[GetGlobalInt("Gamemode")]
+end

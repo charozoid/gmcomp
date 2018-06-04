@@ -5,12 +5,6 @@ AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("cl_fonts.lua")
 
-
---Setting round timers
-BBS.PrebuildTimer = 10
-BBS.BuildTimer = 10
-BBS.VoteTimer = 10
-
 local loadout = {"weapon_physgun", "weapon_physcannon", "gmod_tool", "gmod_camera" }
 
 function GM:PlayerLoadout(ply)
@@ -76,16 +70,6 @@ end
 function BBS:RandomTheme()
 	local int = math.random(#self.Themes)
 	SetGlobalInt("ThemeID", int)
-end
-
---[[
-	BBS:SetGamemode(int gamemode ID)
-	Sets the current gamemode
-]]--
-function BBS:SetGamemode(id)
-	local gamem = self.Gamemodes[id]
-	self.BuildTimer = gamem.buildtime
-	print(self.BuildTimer)
 end
 
 function BBS.StartBuild()
