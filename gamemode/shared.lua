@@ -19,13 +19,13 @@ PHASE_PREBUILD = 1
 PHASE_BUILD = 2
 PHASE_VOTE = 3
 
-function GM:GetPhaseTotalTime(phase)
-	if phase==1 then
-		return BBS.PrebuildTimer
-	elseif phase==2 then
-		return BBS.BuildTimer
-	elseif phase==3 then
-		return BBS.VoteTimer
+function BBS:GetPhaseTotalTime(phase)
+	if phase==PHASE_PREBUILD then
+		return self.PrebuildTimer
+	elseif phase==PHASE_BUILD then
+		return self:GetGamemode().buildtime
+	elseif phase==PHASE_VOTE then
+		return self.VoteTimer
 	end
 end
 
