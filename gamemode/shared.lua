@@ -14,6 +14,16 @@ PHASE_PREBUILD = 1
 PHASE_BUILD = 2
 PHASE_VOTE = 3
 
+function GM:GetPhaseTotalTime(phase)
+	if phase==1 then
+		return BBS.PrebuildTimer
+	elseif phase==2 then
+		return BBS.BuildTimer
+	elseif phase==3 then
+		return BBS.VoteTimer
+	end
+end
+
 function GM:Initialize()
 	BBS:Initialize()
 end
