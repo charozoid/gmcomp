@@ -1,7 +1,10 @@
+include("shared.lua")
+
+AddCSLuaFile("shared.lua")
+AddCSLuaFile("cl_init.lua")
+
+PrintTable(BuildRaces)
+
 function GM:PlayerSpawn(ply)
-	print(ply.." has spawned!")
+
 end
-
---Good luck fexa
-
---How are you gonna fix that git

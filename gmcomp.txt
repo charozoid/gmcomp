@@ -1,0 +1,8 @@
+"gmcomp"
+{
+	"base"		"sandbox"
+	"title"		"Build Races"
+	"maps"		""
+	"menusystem"	"1"
+
+}
