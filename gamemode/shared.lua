@@ -9,17 +9,8 @@ BBS = {}
 BBS.Gamemodes = {}
 BBS.Themes = {}
 
-
---Setting round timers
-BBS.PrebuildTimer = 10
-BBS.BuildTimer = 10
-BBS.VoteTimer = 10
-
 --Setting global round states
 PHASE_IDLE = 0
-PHASE_PREBUILD = 1
-PHASE_BUILD = 2
-PHASE_VOTE = 3
 
 BBS.AllowedProps = {}
 BBS.PropList = {
@@ -88,43 +79,29 @@ BBS.PropList = {
 "models/props_lab/harddrive02.mdl"
 }
 
-function BBS:GetPhaseTotalTime(phase)
-	if phase==PHASE_PREBUILD then
-		return self.PrebuildTimer
-	elseif phase==PHASE_BUILD then
-		return self:GetGamemode().buildtime
-	elseif phase==PHASE_VOTE then
-		return self.VoteTimer
-	end
-end
 
 function GM:Initialize()
 	BBS:Initialize()
 end
 
 function BBS:Initialize()
-	SetGlobalInt("RoundState", PHASE_PREBUILD)
+	SetGlobalInt("RoundState", 0)
+	SetGlobalInt("Gamemode", 0)
 	SetGlobalInt("ThemeID", 0)
-	
-	if SERVER then
-		self:SetGamemode(1)
-		self:SetTheme(1)
-		self.StartRoundTimer()	
-	end
-
 end
 --[[
-	BBS:AddGamemode(string name, int buildtime)
+	BBS:AddGamemode(string name, int buildtime, table loadout, table phases)
 	Add a custom gamemode to the game
+	phases = {{["name"] = "", ["time"] = 0}}
 ]]--
 
-function BBS:AddGamemode(name, buildtime, loadout)
+function BBS:AddGamemode(name, loadout, phases)
 	local count = #self.Gamemodes + 1
-	self.Gamemodes[count] = {["name"] = name, ["buildtime"] = buildtime, ["loadout"] = loadout}
+	self.Gamemodes[count] = {["name"] = name, ["loadout"] = loadout, ["phases"] = phases}
 	--PrintTable(self.Gamemodes)
 end
 
-BBS:AddGamemode("Random Props", 60, {"weapon_physcannon"})
+BBS:AddGamemode("Random Props", {"weapon_physcannon"}, {{["name"] = "Prebuild", ["time"] = 10}, {["name"] = "Build", ["time"] = 10}, {["name"] = "Vote", ["time"] = 10}})
 
 --[[
 	BBS:AddTheme(string name, table customtools, table customprops)
@@ -137,7 +114,34 @@ end
 
 BBS:AddTheme("Car", {"wheel"}, nil)
 
-
+--[[
+	BBS:GetPhaseTotalTime()
+	Returns the current phase total time
+]]--
+function BBS:GetPhaseTotalTime()
+	local roundstate = GetGlobalInt("RoundState")
+	return self:GetGamemode().phases[roundstate].time
+end
+--[[
+	BBS:GetPhaseName()
+	Returns the current phase name
+]]--
+function BBS:GetPhaseName()
+	local roundstate = GetGlobalInt("RoundState")
+	return self:GetGamemode().phases[roundstate].name
+end
+--[[
+	BBS:GetNextPhaseName()
+	Returns the current phase name
+]]--
+function BBS:GetNextPhaseName()
+	local roundstate = GetGlobalInt("RoundState") + 1
+	if roundstate > #self:GetGamemode().phases then
+		return "End"
+	else
+		return self:GetGamemode().phases[roundstate].name
+	end
+end
 --[[
 	BBS:GetGamemode()
 	Returns the current gamemode table

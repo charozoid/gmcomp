@@ -8,18 +8,22 @@ AddCSLuaFile("cl_fonts.lua")
 local defaultloadout = {"weapon_physgun", "weapon_physcannon", "gmod_tool", "gmod_camera" }
 
 function GM:PlayerLoadout(ply)
-	local gmloadout = BBS:GetGamemode().loadout
-	if gmloadout then
-		for k,v in pairs(gmloadout) do
-			ply:Give(v)
+	if BBS:GetGamemode() then
+		local gmloadout = BBS:GetGamemode().loadout
+		if gmloadout then
+			for k,v in pairs(gmloadout) do
+				ply:Give(v)
+			end
+			return true
 		end
-		return true
 	end
+
 	for k,v in pairs(defaultloadout) do
 		ply:Give(v)
 	end
 
 	return true
+
 end
 
 util.AddNetworkString("BBSTimer")
@@ -42,36 +46,30 @@ local function broadcasttime() --Broadcast the timer time to everyone
 	net.Broadcast()
 end
 --[[
-	BBS.StartRoundTimer()
+	BBS:StartRoundTimer()
 	Manages the round timer
 ]]--
-function BBS.StartRoundTimer()
+function BBS:StartRoundTimer()
 	if GetGlobalInt("Gamemode") == 0 then
 		error("Tried to start the timer with no gamemode selected")
 	end
 	local roundstate = GetGlobalInt("RoundState")
+	local gmphaseslen = #self:GetGamemode().phases
+
 	if timer.Exists("RoundTimer") then
 		timer.Destroy("RoundTimer")
 	end
-	print(roundstate)
-	if roundstate == PHASE_PREBUILD then
-		timer.Create("RoundTimer", BBS.PrebuildTimer, 1 , function() 
-			SetGlobalInt("RoundState", PHASE_BUILD)
-			BBS.StartBuild()
-			BBS:StartRoundTimer()
-		end)
-	elseif roundstate == PHASE_BUILD then
-		print(BBS.BuildTimer)
-		timer.Create("RoundTimer",BBS.BuildTimer, 1 , function() 
-			SetGlobalInt("RoundState", PHASE_VOTE)
-			BBS:StartRoundTimer()
-		end)
-	elseif roundstate == PHASE_VOTE then
-	timer.Create("RoundTimer", BBS.VoteTimer, 1 , function() 
-			SetGlobalInt("RoundState", PHASE_IDLE)
-			BBS:SetIdle()
-		end)
+
+	if roundstate > gmphaseslen then
+		BBS:SetIdle()
+		return
 	end
+
+	timer.Create("RoundTimer", self:GetGamemode().phases[roundstate].time, 1, function()
+		SetGlobalInt("RoundState", GetGlobalInt("RoundState") + 1)
+		BBS:StartRoundTimer()
+	end)
+
 	broadcasttime()
 end
 --[[
@@ -83,31 +81,13 @@ function BBS:GetRandomTheme()
 	SetGlobalInt("ThemeID", int)
 end
 
-function BBS.StartBuild()
-
-end
 --[[
 	BBS:SetIdle()
 	Called after the voting ends
 ]]--
 function BBS:SetIdle()
-	self:SetGamemode(0)
-end
-
---[[
-	BBS:NextPhase()
-	Changes the game to the next phase
-]]--
-function BBS:NextPhase()
-	local roundstate = GetGlobalInt("RoundState")
-	if roundstate == PHASE_PREBUILD then
-		SetGlobalInt("RoundState", PHASE_BUILD)
-	elseif roundstate == PHASE_BUILD then
-		SetGlobalInt("RoundState", PHASE_VOTE)
-	elseif roundstate == PHASE_VOTE then
-		SetGlobalInt("RoundState", PHASE_PREBUILD)
-	end
-	self.StartRoundTimer()
+	SetGlobalInt("RoundState", 0)
+	SetGlobalInt("Gamemode", 0)
 end
 
 --[[
@@ -116,9 +96,8 @@ end
 ]]--
 function BBS:SetGamemode(id)
 	local gm = self.Gamemodes[id]
-	SetGlobalInt("RoundState", PHASE_PREBUILD)
+	SetGlobalInt("RoundState", 1)
 	SetGlobalInt("Gamemode", id)
-	BBS.BuildTimer = gm.buildtime
 end
 
 --[[
@@ -148,7 +127,8 @@ function BBS:ChooseRandomProps(number)
 end
 --[[
 	BBS:PickProps(table propidtable)
-	Pick a table of props for use in the mode propidtable = {1, 3, 5, 9, 15}
+	Pick a table of props from global prop list. Using table index
+	Ex : propidtable = {1, 3, 5, 9, 15}
 ]]--
 function BBS:PickProps(propidtable)
 	self.AllowedProps = {}
