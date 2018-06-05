@@ -5,10 +5,17 @@ AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("cl_fonts.lua")
 
-local loadout = {"weapon_physgun", "weapon_physcannon", "gmod_tool", "gmod_camera" }
+local defaultloadout = {"weapon_physgun", "weapon_physcannon", "gmod_tool", "gmod_camera" }
 
 function GM:PlayerLoadout(ply)
-	for k,v in pairs(loadout) do
+	local gmloadout = BBS:GetGamemode().loadout
+	if gmloadout then
+		for k,v in pairs(gmloadout) do
+			ply:Give(v)
+		end
+		return true
+	end
+	for k,v in pairs(defaultloadout) do
 		ply:Give(v)
 	end
 
@@ -39,10 +46,14 @@ end
 	Manages the round timer
 ]]--
 function BBS.StartRoundTimer()
+	if GetGlobalInt("Gamemode") == 0 then
+		error("Tried to start the timer with no gamemode selected")
+	end
 	local roundstate = GetGlobalInt("RoundState")
 	if timer.Exists("RoundTimer") then
 		timer.Destroy("RoundTimer")
 	end
+	print(roundstate)
 	if roundstate == PHASE_PREBUILD then
 		timer.Create("RoundTimer", BBS.PrebuildTimer, 1 , function() 
 			SetGlobalInt("RoundState", PHASE_BUILD)
@@ -50,14 +61,15 @@ function BBS.StartRoundTimer()
 			BBS:StartRoundTimer()
 		end)
 	elseif roundstate == PHASE_BUILD then
+		print(BBS.BuildTimer)
 		timer.Create("RoundTimer",BBS.BuildTimer, 1 , function() 
 			SetGlobalInt("RoundState", PHASE_VOTE)
 			BBS:StartRoundTimer()
 		end)
 	elseif roundstate == PHASE_VOTE then
 	timer.Create("RoundTimer", BBS.VoteTimer, 1 , function() 
-			SetGlobalInt("RoundState", PHASE_PREBUILD)
-			BBS:StartRoundTimer()
+			SetGlobalInt("RoundState", PHASE_IDLE)
+			BBS:SetIdle()
 		end)
 	end
 	broadcasttime()
@@ -74,6 +86,14 @@ end
 function BBS.StartBuild()
 
 end
+--[[
+	BBS:SetIdle()
+	Called after the voting ends
+]]--
+function BBS:SetIdle()
+	self:SetGamemode(0)
+end
+
 --[[
 	BBS:NextPhase()
 	Changes the game to the next phase
@@ -95,7 +115,10 @@ end
 	Sets the current gamemode
 ]]--
 function BBS:SetGamemode(id)
+	local gm = self.Gamemodes[id]
+	SetGlobalInt("RoundState", PHASE_PREBUILD)
 	SetGlobalInt("Gamemode", id)
+	BBS.BuildTimer = gm.buildtime
 end
 
 --[[
@@ -119,7 +142,21 @@ function BBS:ChooseRandomProps(number)
 	for i=1,number do
 		local randpropid = math.random(#self.PropList)
 		net.WriteInt(randpropid, 16)
-		self.AllowedProps[i] = self.PropList[randpropid]
+		self.AllowedProps[""..self.PropList[randpropid]] = true
+	end
+	net.Broadcast()
+end
+--[[
+	BBS:PickProps(table propidtable)
+	Pick a table of props for use in the mode propidtable = {1, 3, 5, 9, 15}
+]]--
+function BBS:PickProps(propidtable)
+	self.AllowedProps = {}
+	net.Start("BBSPropList")
+	for k, v in ipairs(propidtable) do
+		local propid = v
+		self.AllowedProps[""..self.PropList[propid]] = true
+		net.WriteInt(propid, 16)
 	end
 	net.Broadcast()
 end

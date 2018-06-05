@@ -16,6 +16,7 @@ BBS.BuildTimer = 10
 BBS.VoteTimer = 10
 
 --Setting global round states
+PHASE_IDLE = 0
 PHASE_PREBUILD = 1
 PHASE_BUILD = 2
 PHASE_VOTE = 3
@@ -117,13 +118,13 @@ end
 	Add a custom gamemode to the game
 ]]--
 
-function BBS:AddGamemode(name, buildtime)
+function BBS:AddGamemode(name, buildtime, loadout)
 	local count = #self.Gamemodes + 1
-	self.Gamemodes[count] = {["name"] = name, ["buildtime"] = buildtime}
-	PrintTable(self.Gamemodes)
+	self.Gamemodes[count] = {["name"] = name, ["buildtime"] = buildtime, ["loadout"] = loadout}
+	--PrintTable(self.Gamemodes)
 end
 
-BBS:AddGamemode("Random Props", 60)
+BBS:AddGamemode("Random Props", 60, {"weapon_physcannon"})
 
 --[[
 	BBS:AddTheme(string name, table customtools, table customprops)
