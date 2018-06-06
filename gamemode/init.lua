@@ -5,14 +5,11 @@ AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("cl_fonts.lua")
 
-AddCSLuaFile("spawnmenu/cl_spawnmenu.lua")
-AddCSLuaFile("spawnmenu/panels.lua")
-
 local defaultloadout = {"weapon_physgun", "weapon_physcannon", "gmod_tool", "gmod_camera" }
 
 function GM:PlayerLoadout(ply)
-	if BBS:GetMinigame() then
-		local gmloadout = BBS:GetMinigame().loadout
+	if BBS:GetGamemode() then
+		local gmloadout = BBS:GetGamemode().loadout
 		if gmloadout then
 			for k,v in pairs(gmloadout) do
 				ply:Give(v)
@@ -53,11 +50,11 @@ end
 	Manages the round timer
 ]]--
 function BBS:StartRoundTimer()
-	if GetGlobalInt("Minigame") == 0 then
-		error("Tried to start the timer with no Minigame selected")
+	if GetGlobalInt("Gamemode") == 0 then
+		error("Tried to start the timer with no gamemode selected")
 	end
 	local roundstate = GetGlobalInt("RoundState")
-	local gmphaseslen = #self:GetMinigame().phases
+	local gmphaseslen = #self:GetGamemode().phases
 
 	if timer.Exists("RoundTimer") then
 		timer.Destroy("RoundTimer")
@@ -69,7 +66,11 @@ function BBS:StartRoundTimer()
 	end
 
 	if roundstate == 1 then
-		self:GetMinigame().propfunc()
+		self:GetGamemode().propfunc()
+	end
+
+	self:GetGamemode().phases[roundstate].func()
+	timer.Create("RoundTimer", self:GetGamemode().phases[roundstate].time, 1, function()
 		SetGlobalInt("RoundState", GetGlobalInt("RoundState") + 1)
 		BBS:StartRoundTimer()
 	end)
@@ -91,17 +92,17 @@ end
 ]]--
 function BBS:SetIdle()
 	SetGlobalInt("RoundState", 0)
-	SetGlobalInt("Minigame", 0)
+	SetGlobalInt("Gamemode", 0)
 end
 
 --[[
-	BBS:SetMinigame(int Minigame ID)
-	Sets the current Minigame
+	BBS:SetGamemode(int gamemode ID)
+	Sets the current gamemode
 ]]--
-function BBS:SetMinigame(id)
-	local gm = self.Minigames[id]
+function BBS:SetGamemode(id)
+	local gm = self.Gamemodes[id]
 	SetGlobalInt("RoundState", 1)
-	SetGlobalInt("Minigame", id)
+	SetGlobalInt("Gamemode", id)
 end
 
 --[[
@@ -111,22 +112,19 @@ end
 function BBS:SetTheme(id)
 	SetGlobalInt("ThemeID", id)
 end
-
 --[[
-	BBS:ChooseRandomProps(int number)
-	Choose a number of props randomly from the main props table
+	BBS:PickRandomProps(number rand)
+	Pick a random table of props from the global prop list
 ]]--
-
-util.AddNetworkString("BBSPropList")
-
-function BBS:ChooseRandomProps(number)
+function BBS:PickRandomProps(number)
 	self.AllowedProps = {}
+	local idtbl = {}
 	if number>#self.PropList then 
 		error("Tried to get "..number.." random props while there is only "..#self.PropList.." props available!")
 		return
 	end
 	local randpropids = {}
-	net.Start("BBSPropList")
+
 	for i=1,number do
 		::again::
 		local randpropid = math.random(#self.PropList)
@@ -134,17 +132,10 @@ function BBS:ChooseRandomProps(number)
 			goto again
 		end
 		randpropids[randpropid] = true
-	for i=1,number do
-		::again::
-		local randpropid = math.random(#self.PropList)
-		if  randpropids[randpropid] then
-			goto again
-		end
-		randpropids[randpropid] = true
-		net.WriteInt(randpropid, 16)
-		self.AllowedProps[""..self.PropList[randpropid]] = true
+		self.AllowedProps[i] = self.PropList[randpropid]
+		idtbl[i] = randpropid
 	end
-	net.Broadcast()
+	self:AllowProps(idtbl)
 end
 --[[
 	BBS:PickProps(table propidtable)
@@ -152,7 +143,22 @@ end
 	Ex : propidtable = {1, 3, 5, 9, 15}
 ]]--
 function BBS:PickProps(propidtable)
+	local idtbl = {}
+	for k, v in ipairs(propidtable) do
+		idtbl[k] = v
+	end
+	self:AllowProps(idtbl)
+end
+--[[
+	BBS:AllowProps(table propindex)
+	Adds the prop to the allowedprops table and networks to the client
+]]--
+util.AddNetworkString("BBSPropList")
+
+function BBS:AllowProps(tbl)
 	self.AllowedProps = {}
+	local len = #tbl
+
 	net.Start("BBSPropList")
 		net.WriteInt(len, 16)
 
