@@ -89,95 +89,7 @@ function BBS:Initialize()
 	SetGlobalInt("Minigame", 0)
 	SetGlobalInt("ThemeID", 0)
 end
---[[
-	BBS:AddMinigame(string name, int buildtime, table loadout, table phases)
-	Add a custom Minigame to the game
-	phases = {{["name"] = "", ["time"] = 0}}
-]]--
 
-function BBS:AddMinigame(tbl)
-	local count = #self.Minigames + 1
-	self.Minigames[count] = {["id"] = count, ["name"] = tbl.name, ["loadout"] = tbl.loadout, ["tools"] = tbl.customtools, ["phases"] = tbl.phases, ["propfunc"] = tbl.propfunc}
-end
-
-local minigame = {}
-
-minigame.name = "Random Props"
-minigame.loadout = nil
-minigame.phases = {
-	{	["name"] = "Prebuild", 
-		["time"] = 10,
-		["startfunc"] = function() 
-			print("Prebuild start")
-		end,
-		["endfunc"] = function() 
-			print("Prebuild end")
-		end
-	},
-	{	["name"] = "Build", 
-		["time"] = 10,
-		["startfunc"] = function() 
-			print("Build start")
-		end,
-		["endfunc"] = function() 
-			print("Build end")
-		end
-	},
-	{	["name"] = "Vote", 
-		["time"] = 10,
-		["startfunc"] = function() 
-			print("Vote start")
-		end,
-		["endfunc"] = function() 
-			print("Vote end")
-		end
-	}
-}
-
-minigame.customtools = {"weld", "axis", "wheel"}
-minigame.propfunc = function()
-		if SERVER then
-			BBS:PickRandomProps(10)
-		end
-	end
-
-BBS:AddMinigame(minigame)
-
-local minigame = {}
-
-minigame.name = "Random Props"
-minigame.loadout = {"weapon_physcannon"}
-minigame.phases = 
-	{
-		{["name"] = "Build", 
-		["time"] = 10,
-		["startfunc"] = function() 
-			print("This shit works")
-		end,
-		["endfunc"] = function() 
-			print("This shit works2")
-		end}, 
-		{["name"] = "Vote", 
-		["time"] = 10,
-		["startfunc"] = function() 
-			print("This shit works3")
-		end,
-		["endfunc"] = function() 
-			print("This shit works4")
-		end}
-	}
-
-
-minigame.customtools = {"weld", "axis", "wheel"}
-minigame.propfunc = function()
-		if SERVER then
-			BBS:PickRandomProps(10)
-		end
-	end
-
-BBS:AddMinigame(minigame)
-
-minigame = nil
 --[[
 	BBS:AddTheme(string name, table customtools, table customprops)
 	Add a theme with a choice of customtools and customprops
@@ -189,60 +101,10 @@ end
 
 BBS:AddTheme("Car")
 
-
-
---[[
-	BBS:GetPhaseTotalTime()
-	Returns the current phase total time
-]]--
-function BBS:GetPhaseTotalTime()
-	local roundstate = GetGlobalInt("RoundState")
-	if self:GetMinigame() then
-		return self:GetMinigame().phases[roundstate].time
-	end
-end
---[[
-	BBS:GetPhaseName()
-	Returns the current phase name
-]]--
-function BBS:GetPhaseName()
-	local roundstate = GetGlobalInt("RoundState")
-	return self:GetMinigame().phases[roundstate].name
-end
---[[
-	BBS:GetNextPhaseName()
-	Returns the current phase name
-]]--
-function BBS:GetNextPhaseName()
-	local roundstate = GetGlobalInt("RoundState") + 1
-	if roundstate > #self:GetMinigame().phases then
-		return "End"
-	else
-		return self:GetMinigame().phases[roundstate].name
-	end
-end
---[[
-	BBS:GetMinigame()
-	Returns the current Minigame table
-]]--
-function BBS:GetMinigame()
-	return self.Minigames[GetGlobalInt("Minigame")]
-end
-function BBS.GetPhaseTimeLeft()
-	return math.ceil(timer.TimeLeft("RoundTimer"))
-end
 --[[
 	BBS:GetTheme()
 	Returns the current selected theme
 ]]--
 function BBS:GetTheme()
 	return self.Themes[GetGlobalInt("ThemeID")]
-end
-
---[[
-	BBS:GetMinigameTools()
-	Returns the Minigame tools
-]]--
-function BBS:GetMinigameTools()
-	return self:GetMinigame().tools
 end

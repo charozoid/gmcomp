@@ -1,6 +1,17 @@
 include("shared.lua")
+include("rounds/init.lua")
+include("rounds/shared.lua")
+
+include("minigames/init.lua")
+include("minigames/shared.lua")
 
 AddCSLuaFile("shared.lua")
+
+AddCSLuaFile("rounds/shared.lua")
+AddCSLuaFile("rounds/cl_init.lua")
+
+AddCSLuaFile("minigames/shared.lua")
+AddCSLuaFile("minigames/cl_init.lua")
 
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("cl_fonts.lua")
@@ -9,7 +20,10 @@ AddCSLuaFile("spawnmenu/cl_spawnmenu.lua")
 AddCSLuaFile("spawnmenu/panels.lua")
 
 local defaultloadout = {"weapon_physgun", "weapon_physcannon", "gmod_tool", "gmod_camera" }
-
+--[[
+	GM:PlayerLoadout(ply)
+	Controls gamemode loadout or uses default loadout
+]]--
 function GM:PlayerLoadout(ply)
 	if BBS:GetMinigame() then
 		local gmloadout = BBS:GetMinigame().loadout
@@ -28,7 +42,21 @@ function GM:PlayerLoadout(ply)
 	return true
 
 end
-
+--[[
+	GM:PlayerSpawnProp(ply, model)
+	Only make the player be able to spawn the allowed props
+]]--
+function GM:PlayerSpawnProp(ply, model)
+	if not BBS.AllowedProps[model] then
+		return false
+	else
+		return true
+	end
+end
+--[[
+	GM:PlayerInitialSpawn(ply)
+	Delays timer creation 
+]]--
 function GM:PlayerInitialSpawn(ply)
 	local pl = ply
 	timer.Simple(5, function() 
@@ -39,97 +67,12 @@ function GM:PlayerInitialSpawn(ply)
 end
 
 --[[
-	BBS:StartRoundTimer()
-	Manages the round timer
-]]--
-function BBS:StartRoundTimer()
-	if GetGlobalInt("Minigame") == 0 then
-		error("Tried to start the timer with no Minigame selected")
-	end
-	local roundstate = GetGlobalInt("RoundState")
-	local gmphaseslen = #self:GetMinigame().phases
-
-	if timer.Exists("RoundTimer") then
-		timer.Destroy("RoundTimer")
-	end
-
-	if roundstate > gmphaseslen then
-		BBS:SetIdle()
-		return
-	end
-
-	if roundstate == 1 then
-		self:GetMinigame().propfunc()
-	end
-
-	self:GetMinigame().phases[roundstate].startfunc()
-	timer.Create("RoundTimer", self:GetMinigame().phases[roundstate].time, 1, function()
-		BBS:GetMinigame().phases[roundstate].endfunc()
-		SetGlobalInt("RoundState", GetGlobalInt("RoundState") + 1)
-		BBS:StartRoundTimer()
-
-	end)
-end
-
-util.AddNetworkString("BBSConnectTimer")
---[[
-	BBS:SendTimer(ply)
-	Sends the current timer and roundstate to the player
-]]--
-function BBS:SendTimer(ply)
-	net.Start("BBSConnectTimer")
-		net.WriteFloat(timer.TimeLeft("RoundTimer"))
-		net.WriteInt(GetGlobalInt("RoundState"), 16)
-	net.Send(ply)
-end
-
-util.AddNetworkString("BBSTimer")
---[[
-	BBS:StartMinigame()
-	Starts the minigame
-]]--
-function BBS:StartMinigame()
-	self:StartRoundTimer()
-	net.Start("BBSTimer")
-	net.Broadcast()
-end
---[[
 	BBS:RandomTheme
 	Returns random theme
 ]]--
 function BBS:GetRandomTheme()
 	local int = math.random(#self.Themes)
 	SetGlobalInt("ThemeID", int)
-end
-
---[[
-	BBS:SetIdle()
-	Called after the voting ends
-]]--
-function BBS:SetIdle()
-	SetGlobalInt("RoundState", 0)
-	timer.Simple(3, function() SetGlobalInt("Minigame", 0) end)
-end
---[[
-	BBS:SetIdle()
-	Called after the voting ends
-]]--
-function BBS:ResetTimer()
-	SetGlobalInt("RoundState", 0)
-	SetGlobalInt("Minigame", 0)
-
-	if timer.Exists("RoundTimer") then
-		timer.Destroy("RoundTimer")
-	end
-end
---[[
-	BBS:SetMinigame(int Minigame ID)
-	Sets the current Minigame
-]]--
-function BBS:SetMinigame(id)
-	local gm = self.Minigames[id]
-	SetGlobalInt("RoundState", 1)
-	SetGlobalInt("Minigame", id)
 end
 
 --[[
@@ -159,7 +102,6 @@ function BBS:PickRandomProps(number)
 			goto again
 		end
 		randpropids[randpropid] = true
-		self.AllowedProps[i] = self.PropList[randpropid]
 		idtbl[i] = randpropid
 	end
 	self:AllowProps(idtbl)
@@ -191,7 +133,7 @@ function BBS:AllowProps(tbl)
 
 		for k,v in ipairs(tbl) do
 			net.WriteInt(v, 16)
-			self.AllowedProps[k] = self.PropList[v]
+			self.AllowedProps[self.PropList[v]] = true
 		end
 	net.Broadcast()
 end
