@@ -101,7 +101,13 @@ function BBS:AddGamemode(name, loadout, phases)
 	--PrintTable(self.Gamemodes)
 end
 
-BBS:AddGamemode("Random Props", {"weapon_physcannon"}, {{["name"] = "Prebuild", ["time"] = 10}, {["name"] = "Build", ["time"] = 10}, {["name"] = "Vote", ["time"] = 10}})
+BBS:AddGamemode("Random Props", 
+	{"weapon_physcannon"}, 
+	{
+		{["name"] = "Prebuild", ["time"] = 10}, 
+		{["name"] = "Build", ["time"] = 10}, 
+		{["name"] = "Vote", ["time"] = 10}
+	})
 
 --[[
 	BBS:AddTheme(string name, table customtools, table customprops)
