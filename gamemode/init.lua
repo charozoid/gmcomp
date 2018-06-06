@@ -4,7 +4,9 @@ AddCSLuaFile("shared.lua")
 
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("cl_fonts.lua")
-AddCSLuaFile("cl_spawnmenu.lua")
+
+AddCSLuaFile("spawnmenu/cl_spawnmenu.lua")
+AddCSLuaFile("spawnmenu/panels.lua")
 
 local defaultloadout = {"weapon_physgun", "weapon_physcannon", "gmod_tool", "gmod_camera" }
 
@@ -68,10 +70,6 @@ function BBS:StartRoundTimer()
 
 	if roundstate == 1 then
 		self:GetMinigame().propfunc()
-	end
-
-	self:GetMinigame().phases[roundstate].func()
-	timer.Create("RoundTimer", self:GetMinigame().phases[roundstate].time, 1, function()
 		SetGlobalInt("RoundState", GetGlobalInt("RoundState") + 1)
 		BBS:StartRoundTimer()
 	end)
@@ -118,13 +116,35 @@ end
 	BBS:ChooseRandomProps(int number)
 	Choose a number of props randomly from the main props table
 ]]--
-function BBS:PickRandomProps(number)
-	local idtbl = {}
-	for i=1,number do
-		local randpropid = math.random(#self.PropList)
-		idtbl[i] = randpropid
+
+util.AddNetworkString("BBSPropList")
+
+function BBS:ChooseRandomProps(number)
+	self.AllowedProps = {}
+	if number>#self.PropList then 
+		error("Tried to get "..number.." random props while there is only "..#self.PropList.." props available!")
+		return
 	end
-	self:AllowProps(idtbl)
+	local randpropids = {}
+	net.Start("BBSPropList")
+	for i=1,number do
+		::again::
+		local randpropid = math.random(#self.PropList)
+		if  randpropids[randpropid] then
+			goto again
+		end
+		randpropids[randpropid] = true
+	for i=1,number do
+		::again::
+		local randpropid = math.random(#self.PropList)
+		if  randpropids[randpropid] then
+			goto again
+		end
+		randpropids[randpropid] = true
+		net.WriteInt(randpropid, 16)
+		self.AllowedProps[""..self.PropList[randpropid]] = true
+	end
+	net.Broadcast()
 end
 --[[
 	BBS:PickProps(table propidtable)
@@ -132,22 +152,7 @@ end
 	Ex : propidtable = {1, 3, 5, 9, 15}
 ]]--
 function BBS:PickProps(propidtable)
-	local idtbl = {}
-	for k, v in ipairs(propidtable) do
-		idtbl[k] = v
-	end
-	self:AllowProps(idtbl)
-end
---[[
-	BBS:AllowProps(table propindex)
-	Adds the prop to the allowedprops table and networks to the client
-]]--
-util.AddNetworkString("BBSPropList")
-
-function BBS:AllowProps(tbl)
 	self.AllowedProps = {}
-	local len = #tbl
-
 	net.Start("BBSPropList")
 		net.WriteInt(len, 16)
 
