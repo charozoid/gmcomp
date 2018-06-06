@@ -1,5 +1,6 @@
 include("shared.lua")
 include("cl_fonts.lua")
+include("cl_spawnmenu.lua")
 
 local nicephases = {"Prebuild Phase", "Build Phase", "Voting Phase"}
 
