@@ -38,13 +38,18 @@ net.Receive("BBSTimer", function()
 	if timer.Exists("RoundTimer") then
 		timer.Destroy("RoundTimer")
 	end
+
 	timer.Create("RoundTimer", time, 1, function()
 		
 	end)
 end)
 
-net.Receive("BBSPropList", function(len)
+net.Receive("BBSPropList", function()
+	BBS.AllowedProps = {}
+	local len = net.ReadInt(16)
+	
 	for i=1, len do
-		BBS.AllowedProps[i] = BBS.PropList[net.ReadInt(16)]
+		local id = net.ReadInt(16)
+		BBS.AllowedProps[i] = BBS.PropList[id]
 	end
 end)

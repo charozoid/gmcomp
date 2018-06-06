@@ -65,6 +65,11 @@ function BBS:StartRoundTimer()
 		return
 	end
 
+	if roundstate == 1 then
+		self:GetGamemode().propfunc()
+	end
+
+	self:GetGamemode().phases[roundstate].func()
 	timer.Create("RoundTimer", self:GetGamemode().phases[roundstate].time, 1, function()
 		SetGlobalInt("RoundState", GetGlobalInt("RoundState") + 1)
 		BBS:StartRoundTimer()
@@ -112,18 +117,13 @@ end
 	BBS:ChooseRandomProps(int number)
 	Choose a number of props randomly from the main props table
 ]]--
-
-util.AddNetworkString("BBSPropList")
-
-function BBS:ChooseRandomProps(number)
-	self.AllowedProps = {}
-	net.Start("BBSPropList")
+function BBS:PickRandomProps(number)
+	local idtbl = {}
 	for i=1,number do
 		local randpropid = math.random(#self.PropList)
-		net.WriteInt(randpropid, 16)
-		self.AllowedProps[""..self.PropList[randpropid]] = true
+		idtbl[i] = randpropid
 	end
-	net.Broadcast()
+	self:AllowProps(idtbl)
 end
 --[[
 	BBS:PickProps(table propidtable)
@@ -131,12 +131,28 @@ end
 	Ex : propidtable = {1, 3, 5, 9, 15}
 ]]--
 function BBS:PickProps(propidtable)
-	self.AllowedProps = {}
-	net.Start("BBSPropList")
+	local idtbl = {}
 	for k, v in ipairs(propidtable) do
-		local propid = v
-		self.AllowedProps[""..self.PropList[propid]] = true
-		net.WriteInt(propid, 16)
+		idtbl[k] = v
 	end
+	self:AllowProps(idtbl)
+end
+--[[
+	BBS:AllowProps(table propindex)
+	Adds the prop to the allowedprops table and networks to the client
+]]--
+util.AddNetworkString("BBSPropList")
+
+function BBS:AllowProps(tbl)
+	self.AllowedProps = {}
+	local len = #tbl
+
+	net.Start("BBSPropList")
+		net.WriteInt(len, 16)
+
+		for k,v in ipairs(tbl) do
+			net.WriteInt(v, 16)
+			self.AllowedProps[k] = self.PropList[v]
+		end
 	net.Broadcast()
 end

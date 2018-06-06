@@ -95,30 +95,63 @@ end
 	phases = {{["name"] = "", ["time"] = 0}}
 ]]--
 
-function BBS:AddGamemode(name, loadout, phases)
+function BBS:AddGamemode(name, loadout, phases, customtools, propfunc)
 	local count = #self.Gamemodes + 1
-	self.Gamemodes[count] = {["name"] = name, ["loadout"] = loadout, ["phases"] = phases}
-	--PrintTable(self.Gamemodes)
+	self.Gamemodes[count] = {["name"] = name, ["loadout"] = loadout, ["tools"] = customtools, ["phases"] = phases, ["propfunc"] = propfunc}
 end
 
 BBS:AddGamemode("Random Props", 
+	nil, 
+	{
+		{["name"] = "Prebuild", 
+		["time"] = 10,
+		["func"] = function() 
+			print("This shit works")
+		end}, 
+		{["name"] = "Build", 
+		["time"] = 10,
+		["func"] = function() 
+			print("This shit works2")
+		end}, 
+		{["name"] = "Vote", 
+		["time"] = 10,
+		["func"] = function() 
+			print("This shit works3")
+		end}
+	},
+	nil,
+	function()
+		if SERVER then
+			BBS:PickRandomProps(10)
+		end
+	end)
+
+BBS:AddGamemode("Gravity tower", 
 	{"weapon_physcannon"}, 
 	{
-		{["name"] = "Prebuild", ["time"] = 10}, 
-		{["name"] = "Build", ["time"] = 10}, 
-		{["name"] = "Vote", ["time"] = 10}
-	})
+		{["name"] = "Build", 
+		["time"] = 10,
+		["func"] = function() 
+			print("This shit works")
+		end}, 
+		{["name"] = "Vote", 
+		["time"] = 10,
+		["func"] = function() 
+			print("This shit works2")
+		end}
+	},
+	{"wheel", "weld", "axis"})
 
 --[[
 	BBS:AddTheme(string name, table customtools, table customprops)
 	Add a theme with a choice of customtools and customprops
 ]]--
-function BBS:AddTheme(name, customtools, customprops)
+function BBS:AddTheme(name)
 	local count = #self.Themes
-	self.Themes[count] = {["name"] = name, ["customtools"] = customtools, ["customprops"] = customprops}
+	self.Themes[count] = {["name"] = name}
 end
 
-BBS:AddTheme("Car", {"wheel"}, nil)
+BBS:AddTheme("Car")
 
 --[[
 	BBS:GetPhaseTotalTime()
@@ -164,3 +197,10 @@ function BBS:GetTheme()
 	return self.Themes[GetGlobalInt("ThemeID")]
 end
 
+--[[
+	BBS:GetGamemodeTools()
+	Returns the gamemode tools
+]]--
+function BBS:GetGamemodeTools()
+	return self:GetGamemode().tools
+end
