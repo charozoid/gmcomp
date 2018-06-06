@@ -6,7 +6,7 @@ GM.Website = ""
 DeriveGamemode( "sandbox" )
 
 BBS = {}
-BBS.Gamemodes = {}
+BBS.Minigames = {}
 BBS.Themes = {}
 
 --Setting global round states
@@ -86,39 +86,72 @@ end
 
 function BBS:Initialize()
 	SetGlobalInt("RoundState", 0)
-	SetGlobalInt("Gamemode", 0)
+	SetGlobalInt("Minigame", 0)
 	SetGlobalInt("ThemeID", 0)
 end
 --[[
-	BBS:AddGamemode(string name, int buildtime, table loadout, table phases)
-	Add a custom gamemode to the game
+	BBS:AddMinigame(string name, int buildtime, table loadout, table phases)
+	Add a custom Minigame to the game
 	phases = {{["name"] = "", ["time"] = 0}}
 ]]--
 
-function BBS:AddGamemode(name, loadout, phases)
-	local count = #self.Gamemodes + 1
-	self.Gamemodes[count] = {["name"] = name, ["loadout"] = loadout, ["phases"] = phases}
-	--PrintTable(self.Gamemodes)
+function BBS:AddMinigame(name, loadout, phases, customtools, propfunc)
+	local count = #self.Minigames + 1
+	self.Minigames[count] = {["name"] = name, ["loadout"] = loadout, ["tools"] = customtools, ["phases"] = phases, ["propfunc"] = propfunc}
 end
 
-BBS:AddGamemode("Random Props", 
+BBS:AddMinigame("Random Props", 
+	nil, 
+	{
+		{["name"] = "Prebuild", 
+		["time"] = 10,
+		["func"] = function() 
+			print("This shit works")
+		end}, 
+		{["name"] = "Build", 
+		["time"] = 10,
+		["func"] = function() 
+			print("This shit works2")
+		end}, 
+		{["name"] = "Vote", 
+		["time"] = 10,
+		["func"] = function() 
+			print("This shit works3")
+		end}
+	},
+	{"wheel", "weld", "axis"},
+	function()
+		if SERVER then
+			BBS:PickRandomProps(10)
+		end
+	end)
+
+BBS:AddMinigame("Gravity tower", 
 	{"weapon_physcannon"}, 
 	{
-		{["name"] = "Prebuild", ["time"] = 10}, 
-		{["name"] = "Build", ["time"] = 10}, 
-		{["name"] = "Vote", ["time"] = 10}
-	})
+		{["name"] = "Build", 
+		["time"] = 10,
+		["func"] = function() 
+			print("This shit works")
+		end}, 
+		{["name"] = "Vote", 
+		["time"] = 10,
+		["func"] = function() 
+			print("This shit works2")
+		end}
+	},
+	{"wheel", "weld", "axis"})
 
 --[[
 	BBS:AddTheme(string name, table customtools, table customprops)
 	Add a theme with a choice of customtools and customprops
 ]]--
-function BBS:AddTheme(name, customtools, customprops)
+function BBS:AddTheme(name)
 	local count = #self.Themes
-	self.Themes[count] = {["name"] = name, ["customtools"] = customtools, ["customprops"] = customprops}
+	self.Themes[count] = {["name"] = name}
 end
 
-BBS:AddTheme("Car", {"wheel"}, nil)
+BBS:AddTheme("Car")
 
 --[[
 	BBS:GetPhaseTotalTime()
@@ -126,7 +159,7 @@ BBS:AddTheme("Car", {"wheel"}, nil)
 ]]--
 function BBS:GetPhaseTotalTime()
 	local roundstate = GetGlobalInt("RoundState")
-	return self:GetGamemode().phases[roundstate].time
+	return self:GetMinigame().phases[roundstate].time
 end
 --[[
 	BBS:GetPhaseName()
@@ -134,7 +167,7 @@ end
 ]]--
 function BBS:GetPhaseName()
 	local roundstate = GetGlobalInt("RoundState")
-	return self:GetGamemode().phases[roundstate].name
+	return self:GetMinigame().phases[roundstate].name
 end
 --[[
 	BBS:GetNextPhaseName()
@@ -142,18 +175,18 @@ end
 ]]--
 function BBS:GetNextPhaseName()
 	local roundstate = GetGlobalInt("RoundState") + 1
-	if roundstate > #self:GetGamemode().phases then
+	if roundstate > #self:GetMinigame().phases then
 		return "End"
 	else
-		return self:GetGamemode().phases[roundstate].name
+		return self:GetMinigame().phases[roundstate].name
 	end
 end
 --[[
-	BBS:GetGamemode()
-	Returns the current gamemode table
+	BBS:GetMinigame()
+	Returns the current Minigame table
 ]]--
-function BBS:GetGamemode()
-	return self.Gamemodes[GetGlobalInt("Gamemode")]
+function BBS:GetMinigame()
+	return self.Minigames[GetGlobalInt("Minigame")]
 end
 
 --[[
@@ -164,3 +197,10 @@ function BBS:GetTheme()
 	return self.Themes[GetGlobalInt("ThemeID")]
 end
 
+--[[
+	BBS:GetMinigameTools()
+	Returns the Minigame tools
+]]--
+function BBS:GetMinigameTools()
+	return self:GetMinigame().tools
+end
