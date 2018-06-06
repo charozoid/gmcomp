@@ -107,20 +107,29 @@ minigame.loadout = nil
 minigame.phases = {
 	{	["name"] = "Prebuild", 
 		["time"] = 10,
-		["func"] = function() 
-			print("This shit works")
+		["startfunc"] = function() 
+			print("Prebuild start")
+		end,
+		["endfunc"] = function() 
+			print("Prebuild end")
 		end
 	},
-	{	["name"] = "Prebuild", 
+	{	["name"] = "Build", 
 		["time"] = 10,
-		["func"] = function() 
-			print("This shit works")
+		["startfunc"] = function() 
+			print("Build start")
+		end,
+		["endfunc"] = function() 
+			print("Build end")
 		end
 	},
-	{	["name"] = "Prebuild", 
+	{	["name"] = "Vote", 
 		["time"] = 10,
-		["func"] = function() 
-			print("This shit works")
+		["startfunc"] = function() 
+			print("Vote start")
+		end,
+		["endfunc"] = function() 
+			print("Vote end")
 		end
 	}
 }
@@ -142,13 +151,19 @@ minigame.phases =
 	{
 		{["name"] = "Build", 
 		["time"] = 10,
-		["func"] = function() 
+		["startfunc"] = function() 
 			print("This shit works")
+		end,
+		["endfunc"] = function() 
+			print("This shit works2")
 		end}, 
 		{["name"] = "Vote", 
 		["time"] = 10,
-		["func"] = function() 
-			print("This shit works2")
+		["startfunc"] = function() 
+			print("This shit works3")
+		end,
+		["endfunc"] = function() 
+			print("This shit works4")
 		end}
 	}
 
@@ -174,13 +189,17 @@ end
 
 BBS:AddTheme("Car")
 
+
+
 --[[
 	BBS:GetPhaseTotalTime()
 	Returns the current phase total time
 ]]--
 function BBS:GetPhaseTotalTime()
 	local roundstate = GetGlobalInt("RoundState")
-	return self:GetMinigame().phases[roundstate].time
+	if self:GetMinigame() then
+		return self:GetMinigame().phases[roundstate].time
+	end
 end
 --[[
 	BBS:GetPhaseName()
@@ -209,7 +228,9 @@ end
 function BBS:GetMinigame()
 	return self.Minigames[GetGlobalInt("Minigame")]
 end
-
+function BBS.GetPhaseTimeLeft()
+	return math.ceil(timer.TimeLeft("RoundTimer"))
+end
 --[[
 	BBS:GetTheme()
 	Returns the current selected theme

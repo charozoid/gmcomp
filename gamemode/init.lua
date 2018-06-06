@@ -29,25 +29,15 @@ function GM:PlayerLoadout(ply)
 
 end
 
-util.AddNetworkString("BBSTimer")
-
-local function sendtime(ply) --Send the timer time to the client
-	local roundtimer = math.floor(timer.TimeLeft("RoundTimer"))
-
-	net.Start("BBSTimer")
-		net.WriteInt(roundtimer, 32)
-	net.Send(ply)
+function GM:PlayerInitialSpawn(ply)
+	local pl = ply
+	timer.Simple(5, function() 
+		if timer.Exists("RoundTimer") then
+			BBS:SendTimer(pl)
+		end
+	end)
 end
 
-hook.Add("PlayerInitialSpawn", "sendroundtimer", sendtime)
-
-local function broadcasttime() --Broadcast the timer time to everyone
-	local roundtimer = math.floor(timer.TimeLeft("RoundTimer"))
-
-	net.Start("BBSTimer")
-		net.WriteInt(roundtimer, 32)
-	net.Broadcast()
-end
 --[[
 	BBS:StartRoundTimer()
 	Manages the round timer
@@ -72,13 +62,36 @@ function BBS:StartRoundTimer()
 		self:GetMinigame().propfunc()
 	end
 
-	self:GetMinigame().phases[roundstate].func()
+	self:GetMinigame().phases[roundstate].startfunc()
 	timer.Create("RoundTimer", self:GetMinigame().phases[roundstate].time, 1, function()
+		BBS:GetMinigame().phases[roundstate].endfunc()
 		SetGlobalInt("RoundState", GetGlobalInt("RoundState") + 1)
 		BBS:StartRoundTimer()
-	end)
 
-	broadcasttime()
+	end)
+end
+
+util.AddNetworkString("BBSConnectTimer")
+--[[
+	BBS:SendTimer(ply)
+	Sends the current timer and roundstate to the player
+]]--
+function BBS:SendTimer(ply)
+	net.Start("BBSConnectTimer")
+		net.WriteFloat(timer.TimeLeft("RoundTimer"))
+		net.WriteInt(GetGlobalInt("RoundState"), 16)
+	net.Send(ply)
+end
+
+util.AddNetworkString("BBSTimer")
+--[[
+	BBS:StartMinigame()
+	Starts the minigame
+]]--
+function BBS:StartMinigame()
+	self:StartRoundTimer()
+	net.Start("BBSTimer")
+	net.Broadcast()
 end
 --[[
 	BBS:RandomTheme
@@ -95,9 +108,20 @@ end
 ]]--
 function BBS:SetIdle()
 	SetGlobalInt("RoundState", 0)
-	SetGlobalInt("Minigame", 0)
+	timer.Simple(3, function() SetGlobalInt("Minigame", 0) end)
 end
+--[[
+	BBS:SetIdle()
+	Called after the voting ends
+]]--
+function BBS:ResetTimer()
+	SetGlobalInt("RoundState", 0)
+	SetGlobalInt("Minigame", 0)
 
+	if timer.Exists("RoundTimer") then
+		timer.Destroy("RoundTimer")
+	end
+end
 --[[
 	BBS:SetMinigame(int Minigame ID)
 	Sets the current Minigame
