@@ -1,9 +1,20 @@
+include("panels.lua")
+
 local bbs_spawn = {}
 
 local f
 
 function bbs_spawn:Fill()
-	local w,h = 990,700
+	local w,h = 1250, 700
+
+	f = vgui.Create("BBS-SpawnMenu")
+	f:SetSize(w,h)
+	f:SetVisible(false)
+	f:SetPos(ScrW()/2-1250/2,ScrH()/2-700/2)
+	f:AdjustTP()
+
+
+/*	local w,h = 990,700
 	f = vgui.Create("DFrame")
 	f:SetSize(w,h)
 	f:SetTitle("")
@@ -62,18 +73,6 @@ function bbs_spawn:Fill()
 		surface.DrawRect(0,0,w,h)
 		surface.SetDrawColor(30,30,30)
 		surface.DrawRect(0,0,w,28)		
-
-		/*local right_w = 250
-		local left_w = w-(right_w+10)
-		surface.SetDrawColor(40,40,40)
-		surface.DrawRect(0,0,left_w,h)
-		surface.SetDrawColor(30,30,30)
-		surface.DrawRect(0,0,left_w,28)*/
-/*
-		surface.SetDrawColor(40,40,40)
-		surface.DrawRect(left_w+10,0,right_w,h)
-		surface.SetDrawColor(30,30,30)
-		surface.DrawRect(left_w+10,0,right_w,28)*/
 	end
 
 	f:MakePopup()
@@ -86,7 +85,7 @@ function bbs_spawn:Fill()
 	f.toolpanel:SetVisible(true)
 	f.toolpanel:SetKeyboardInputEnabled(false)
 	f.toolpanel:SetMouseInputEnabled(true)
-	f.toolpanel:SetAlpha(255)
+	f.toolpanel:SetAlpha(255)*/
 end
 
 function bbs_spawn:Open()
@@ -99,7 +98,7 @@ end
 function bbs_spawn:Close()
 	f:Close()
 end
-/*
+
 function GM:OnSpawnMenuOpen()
 	if LocalPlayer():GetUserGroup()=="user" then 
 		bbs_spawn:Open()
@@ -111,4 +110,4 @@ function GM:OnSpawnMenuClose()
 	if LocalPlayer():GetUserGroup()=="user" then 
 		bbs_spawn:Close()
 	end	
-end*/
+end

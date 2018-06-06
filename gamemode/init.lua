@@ -4,7 +4,9 @@ AddCSLuaFile("shared.lua")
 
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("cl_fonts.lua")
-AddCSLuaFile("cl_spawnmenu.lua")
+
+AddCSLuaFile("spawnmenu/cl_spawnmenu.lua")
+AddCSLuaFile("spawnmenu/panels.lua")
 
 local defaultloadout = {"weapon_physgun", "weapon_physcannon", "gmod_tool", "gmod_camera" }
 
@@ -118,9 +120,19 @@ util.AddNetworkString("BBSPropList")
 
 function BBS:ChooseRandomProps(number)
 	self.AllowedProps = {}
+	if number>#self.PropList then 
+		error("Tried to get "..number.." random props while there is only "..#self.PropList.." props available!")
+		return
+	end
+	local randpropids = {}
 	net.Start("BBSPropList")
 	for i=1,number do
+		::again::
 		local randpropid = math.random(#self.PropList)
+		if  randpropids[randpropid] then
+			goto again
+		end
+		randpropids[randpropid] = true
 		net.WriteInt(randpropid, 16)
 		self.AllowedProps[""..self.PropList[randpropid]] = true
 	end
