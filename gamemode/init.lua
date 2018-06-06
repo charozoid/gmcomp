@@ -9,8 +9,8 @@ AddCSLuaFile("cl_spawnmenu.lua")
 local defaultloadout = {"weapon_physgun", "weapon_physcannon", "gmod_tool", "gmod_camera" }
 
 function GM:PlayerLoadout(ply)
-	if BBS:GetGamemode() then
-		local gmloadout = BBS:GetGamemode().loadout
+	if BBS:GetMinigame() then
+		local gmloadout = BBS:GetMinigame().loadout
 		if gmloadout then
 			for k,v in pairs(gmloadout) do
 				ply:Give(v)
@@ -51,11 +51,11 @@ end
 	Manages the round timer
 ]]--
 function BBS:StartRoundTimer()
-	if GetGlobalInt("Gamemode") == 0 then
-		error("Tried to start the timer with no gamemode selected")
+	if GetGlobalInt("Minigame") == 0 then
+		error("Tried to start the timer with no Minigame selected")
 	end
 	local roundstate = GetGlobalInt("RoundState")
-	local gmphaseslen = #self:GetGamemode().phases
+	local gmphaseslen = #self:GetMinigame().phases
 
 	if timer.Exists("RoundTimer") then
 		timer.Destroy("RoundTimer")
@@ -67,11 +67,11 @@ function BBS:StartRoundTimer()
 	end
 
 	if roundstate == 1 then
-		self:GetGamemode().propfunc()
+		self:GetMinigame().propfunc()
 	end
 
-	self:GetGamemode().phases[roundstate].func()
-	timer.Create("RoundTimer", self:GetGamemode().phases[roundstate].time, 1, function()
+	self:GetMinigame().phases[roundstate].func()
+	timer.Create("RoundTimer", self:GetMinigame().phases[roundstate].time, 1, function()
 		SetGlobalInt("RoundState", GetGlobalInt("RoundState") + 1)
 		BBS:StartRoundTimer()
 	end)
@@ -93,17 +93,17 @@ end
 ]]--
 function BBS:SetIdle()
 	SetGlobalInt("RoundState", 0)
-	SetGlobalInt("Gamemode", 0)
+	SetGlobalInt("Minigame", 0)
 end
 
 --[[
-	BBS:SetGamemode(int gamemode ID)
-	Sets the current gamemode
+	BBS:SetMinigame(int Minigame ID)
+	Sets the current Minigame
 ]]--
-function BBS:SetGamemode(id)
-	local gm = self.Gamemodes[id]
+function BBS:SetMinigame(id)
+	local gm = self.Minigames[id]
 	SetGlobalInt("RoundState", 1)
-	SetGlobalInt("Gamemode", id)
+	SetGlobalInt("Minigame", id)
 end
 
 --[[

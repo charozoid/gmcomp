@@ -95,39 +95,50 @@ end
 	phases = {{["name"] = "", ["time"] = 0}}
 ]]--
 
-function BBS:AddMinigame(name, loadout, phases, customtools, propfunc)
+function BBS:AddMinigame(tbl)
 	local count = #self.Minigames + 1
-	self.Minigames[count] = {["name"] = name, ["loadout"] = loadout, ["tools"] = customtools, ["phases"] = phases, ["propfunc"] = propfunc}
+	self.Minigames[count] = {["id"] = count, ["name"] = tbl.name, ["loadout"] = tbl.loadout, ["tools"] = tbl.customtools, ["phases"] = tbl.phases, ["propfunc"] = tbl.propfunc}
 end
 
-BBS:AddMinigame("Random Props", 
-	nil, 
-	{
-		{["name"] = "Prebuild", 
+local minigame = {}
+
+minigame.name = "Random Props"
+minigame.loadout = nil
+minigame.phases = {
+	{	["name"] = "Prebuild", 
 		["time"] = 10,
 		["func"] = function() 
 			print("This shit works")
-		end}, 
-		{["name"] = "Build", 
-		["time"] = 10,
-		["func"] = function() 
-			print("This shit works2")
-		end}, 
-		{["name"] = "Vote", 
-		["time"] = 10,
-		["func"] = function() 
-			print("This shit works3")
-		end}
+		end
 	},
-	{"wheel", "weld", "axis"},
-	function()
+	{	["name"] = "Prebuild", 
+		["time"] = 10,
+		["func"] = function() 
+			print("This shit works")
+		end
+	},
+	{	["name"] = "Prebuild", 
+		["time"] = 10,
+		["func"] = function() 
+			print("This shit works")
+		end
+	}
+}
+
+minigame.customtools = {"weld", "axis", "wheel"}
+minigame.propfunc = function()
 		if SERVER then
 			BBS:PickRandomProps(10)
 		end
-	end)
+	end
 
-BBS:AddMinigame("Gravity tower", 
-	{"weapon_physcannon"}, 
+BBS:AddMinigame(minigame)
+
+local minigame = {}
+
+minigame.name = "Random Props"
+minigame.loadout = {"weapon_physcannon"}
+minigame.phases = 
 	{
 		{["name"] = "Build", 
 		["time"] = 10,
@@ -139,9 +150,19 @@ BBS:AddMinigame("Gravity tower",
 		["func"] = function() 
 			print("This shit works2")
 		end}
-	},
-	{"wheel", "weld", "axis"})
+	}
 
+
+minigame.customtools = {"weld", "axis", "wheel"}
+minigame.propfunc = function()
+		if SERVER then
+			BBS:PickRandomProps(10)
+		end
+	end
+
+BBS:AddMinigame(minigame)
+
+minigame = nil
 --[[
 	BBS:AddTheme(string name, table customtools, table customprops)
 	Add a theme with a choice of customtools and customprops
