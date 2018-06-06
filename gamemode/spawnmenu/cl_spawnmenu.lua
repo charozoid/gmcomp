@@ -1,6 +1,8 @@
 include("panels.lua")
 
-local bbs_spawn = {}
+bbs_spawn = bbs_spawn or {}
+
+BBS.SpawnMenuDisabled = BBS.SpawnMenuDisabled or false -- a config value for admins to use whether new ui or default ui (not editable)
 
 local f
 
@@ -12,80 +14,6 @@ function bbs_spawn:Fill()
 	f:SetVisible(false)
 	f:SetPos(ScrW()/2-1250/2,ScrH()/2-700/2)
 	f:AdjustTP()
-
-
-/*	local w,h = 990,700
-	f = vgui.Create("DFrame")
-	f:SetSize(w,h)
-	f:SetTitle("")
-	f:SetDraggable(false)
-	f:ShowCloseButton(false)
-	f:SetPos(ScrW()/2-1250/2,ScrH()/2-700/2)
-
-	f.toolpanel = vgui.Create("DFrame")
-	f.toolpanel:SetSize(250,select(2,f:GetSize()))
-	f.toolpanel:SetPos(select(1,f:GetPos())+select(1,f:GetSize())+10,select(2,f:GetPos()))
-	f.toolpanel:SetTitle("")
-	f.toolpanel:SetDraggable(false)
-	f.toolpanel:ShowCloseButton(false)
-
-	f.toolpanel.Paint = function(s,w,h)
-		surface.SetDrawColor(40,40,40)
-		surface.DrawRect(0,0,w,h)
-		surface.SetDrawColor(30,30,30)
-		surface.DrawRect(0,0,w,28)
-	end
-
-	function f:Open()
-		RestoreCursorPosition()
-
-		if (self:IsVisible()) then return end
-
-		CloseDermaMenus()
-
-		self:MakePopup()
-		self:SetVisible(true)
-		self:SetKeyboardInputEnabled(false)
-		self:SetMouseInputEnabled(true)
-		self:SetAlpha(255)
-
-		self.toolpanel:MakePopup()
-		self.toolpanel:SetVisible(true)
-		self.toolpanel:SetKeyboardInputEnabled(false)
-		self.toolpanel:SetMouseInputEnabled(true)
-		self.toolpanel:SetAlpha(255)
-	end
-	function f:Close()
-		RememberCursorPosition()
-
-		CloseDermaMenus()
-
-		self:SetKeyboardInputEnabled(false)
-		self:SetMouseInputEnabled(false)
-		self:SetVisible(false)
-
-		self.toolpanel:SetKeyboardInputEnabled(false)
-		self.toolpanel:SetMouseInputEnabled(false)
-		self.toolpanel:SetVisible(false)
-	end
-	f.Paint = function(s,w,h)
-		surface.SetDrawColor(40,40,40)
-		surface.DrawRect(0,0,w,h)
-		surface.SetDrawColor(30,30,30)
-		surface.DrawRect(0,0,w,28)		
-	end
-
-	f:MakePopup()
-	f:SetVisible(true)
-	f:SetKeyboardInputEnabled(false)
-	f:SetMouseInputEnabled(true)
-	f:SetAlpha(255)
-
-	f.toolpanel:MakePopup()
-	f.toolpanel:SetVisible(true)
-	f.toolpanel:SetKeyboardInputEnabled(false)
-	f.toolpanel:SetMouseInputEnabled(true)
-	f.toolpanel:SetAlpha(255)*/
 end
 
 function bbs_spawn:Open()
@@ -96,18 +24,60 @@ function bbs_spawn:Open()
 end
 
 function bbs_spawn:Close()
+	if not f or not IsValid(f) then return end
 	f:Close()
+end
+
+function bbs_spawn:OpenDef()
+	if (IsValid(g_SpawnMenu)) then
+		g_SpawnMenu:Open()
+		menubar.ParentTo(g_SpawnMenu)
+
+		if g_SpawnMenu.shifter then return end
+		g_SpawnMenu.shifter = vgui.Create("DFrame")
+		g_SpawnMenu.shifter:SetParent(g_SpawnMenu)
+		g_SpawnMenu.shifter:SetSize(85,16)
+		g_SpawnMenu.shifter:SetPos(40,33)
+		g_SpawnMenu.shifter:ShowCloseButton(false)
+		g_SpawnMenu.shifter:SetDraggable(false)
+		g_SpawnMenu.shifter:SetTitle("")
+		g_SpawnMenu.shifter:DockPadding(0,0,0,0)
+
+		g_SpawnMenu.shifter.navbar = vgui.Create("BBS-NavBar",g_SpawnMenu.shifter)
+		g_SpawnMenu.shifter.navbar:Dock(FILL)
+		g_SpawnMenu.shifter.navbar:AddButton("bbs_spawn", function() 
+			BBS.SpawnMenuDisabled = false 
+			bbs_spawn:CloseDef()
+			bbs_spawn:Open()
+		end)
+		g_SpawnMenu.shifter.Paint = function(s,w,h)
+			surface.SetDrawColor(40,40,40)
+			surface.DrawRect(0,0,w,h)
+		end
+	end
+end
+
+function bbs_spawn:CloseDef()
+	if(IsValid(g_SpawnMenu)) then 
+		g_SpawnMenu:Close() 
+	end
 end
 
 function GM:OnSpawnMenuOpen()
 	if LocalPlayer():GetUserGroup()=="user" then 
 		bbs_spawn:Open()
 		return false 
+	else
+		if BBS.SpawnMenuDisabled then
+			bbs_spawn:OpenDef()
+		elseif not BBS.SpawnMenuDisabled then
+			bbs_spawn:Open()
+			return false
+		end
 	end
 end
 
 function GM:OnSpawnMenuClose()
-	if LocalPlayer():GetUserGroup()=="user" then 
-		bbs_spawn:Close()
-	end	
+	bbs_spawn:Close()
+	bbs_spawn:CloseDef()
 end
