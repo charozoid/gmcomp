@@ -42,6 +42,7 @@ function BBS:StartRoundTimer()
 
 	if roundstate == 1 then
 		self:GetMinigame().propfunc()
+		self:StartCLTimer()
 	end
 
 	self:GetMinigame().phases[roundstate].startfunc()
@@ -92,35 +93,3 @@ end
 function BBS.GetPhaseTimeLeft()
 	return math.ceil(timer.TimeLeft("RoundTimer"))
 end
---[[
-	BBS:StartRoundTimer()
-	Manages the round timer
-]]--
-/*function BBS:StartRoundTimer()
-	if GetGlobalInt("Minigame") == 0 then
-		error("Tried to start the timer with no Minigame selected")
-	end
-	local roundstate = GetGlobalInt("RoundState")
-	local gmphaseslen = #self:GetMinigame().phases
-
-	if timer.Exists("RoundTimer") then
-		timer.Destroy("RoundTimer")
-	end
-
-	if roundstate > gmphaseslen then
-		BBS:SetIdle()
-		return
-	end
-
-	if roundstate == 1 then
-		self:GetMinigame().propfunc()
-	end
-
-	self:GetMinigame().phases[roundstate].startfunc()
-	timer.Create("RoundTimer", self:GetMinigame().phases[roundstate].time, 1, function()
-		BBS:GetMinigame().phases[roundstate].endfunc()
-		SetGlobalInt("RoundState", GetGlobalInt("RoundState") + 1)
-		BBS:StartRoundTimer()
-
-	end)
-end*/

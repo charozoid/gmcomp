@@ -7,3 +7,15 @@ function BBS:SetMinigame(id)
 	SetGlobalInt("RoundState", 1)
 	SetGlobalInt("Minigame", id)
 end
+--[[
+	BBS:StartMinigame()
+	Starts the minigame
+]]--
+
+function BBS:StartMinigame()
+	self:StartRoundTimer()
+
+	for k, v in pairs(player.GetAll()) do
+		v:Spawn()
+	end
+end

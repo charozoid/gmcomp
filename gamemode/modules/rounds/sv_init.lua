@@ -1,16 +1,14 @@
 --[[
-	BBS:StartMinigame()
-	Starts the minigame
+	BBS:StartCLTimer()
+	Broadcast signal to players to start their round timer
 ]]--
 util.AddNetworkString("BBSStartTimer")
-function BBS:StartMinigame()
-	self:StartRoundTimer()
+function BBS:StartCLTimer()
 	net.Start("BBSStartTimer")
 	net.Broadcast()
-	for k, v in pairs(player.GetAll()) do
-		v:Spawn()
-	end
 end
+
+
 util.AddNetworkString("BBSConnectTimer")
 --[[
 	BBS:SendTimer(ply)

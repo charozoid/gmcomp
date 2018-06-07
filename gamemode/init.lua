@@ -1,29 +1,32 @@
 include("shared.lua")
-include("rounds/init.lua")
-include("rounds/shared.lua")
-
-include("minigames/init.lua")
-include("minigames/shared.lua")
-
-include("prop_protection/init.lua")
-include("prop_protection/shared.lua")
-
 AddCSLuaFile("shared.lua")
-
-AddCSLuaFile("rounds/shared.lua")
-AddCSLuaFile("rounds/cl_init.lua")
-
-AddCSLuaFile("minigames/shared.lua")
-AddCSLuaFile("minigames/cl_init.lua")
-
-AddCSLuaFile("prop_protection/shared.lua")
-AddCSLuaFile("prop_protection/cl_init.lua")
 
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("cl_fonts.lua")
 
-AddCSLuaFile("spawnmenu/cl_spawnmenu.lua")
-AddCSLuaFile("spawnmenu/panels.lua")
+local p = "gamemodes/buildbattles/gamemode/modules/*"
+local _, modules = file.Find(""..p, "GAME")
+
+for k, v in pairs(modules) do
+	local svinc = file.Find("gamemodes/buildbattles/gamemode/modules/"..v.."/*.lua", "GAME")
+
+	for i, j in pairs(svinc) do
+		local sub = string.sub(j, 1, 3)
+		if sub == "sv_" then
+			include("modules/"..v.."/"..j)
+		elseif sub == "cl_" then
+			AddCSLuaFile("modules/"..v.."/"..j)
+		elseif j == "shared.lua" then
+			include("modules/"..v.."/"..j)
+			AddCSLuaFile("modules/"..v.."/"..j)
+		end
+	end
+	print("Added module "..v)
+end
+
+
+/*AddCSLuaFile("spawnmenu/cl_spawnmenu.lua")
+AddCSLuaFile("spawnmenu/panels.lua")*/
 
 local defaultloadout = {"weapon_physgun", "weapon_physcannon", "gmod_tool", "gmod_camera" }
 --[[

@@ -1,16 +1,22 @@
 include("shared.lua")
 include("cl_fonts.lua")
 
-include("rounds/cl_init.lua")
-include("rounds/shared.lua")
+local p = "buildbattles/gamemode/modules/*"
+local _, modules = file.Find(""..p, "LUA")
+PrintTable(modules)
+for k, v in pairs(modules) do
+	local svinc = file.Find("buildbattles/gamemode/modules/"..v.."/*.lua", "LUA")
 
-include("minigames/cl_init.lua")
-include("minigames/shared.lua")
-
-include("prop_protection/cl_init.lua")
-include("prop_protection/shared.lua")
-
-include("spawnmenu/cl_spawnmenu.lua")
+	for i, j in pairs(svinc) do
+		local sub = string.sub(j, 1, 3)
+		if sub == "cl_" then
+			include("modules/"..v.."/"..j)
+		elseif j == "shared.lua" then
+			include("modules/"..v.."/"..j)
+		end
+	end
+	print("Added module "..v)
+end
 
 local nicephases = {"Prebuild Phase", "Build Phase", "Voting Phase"}
 

@@ -1,5 +1,3 @@
-include("panels.lua")
-
 bbs_spawn = bbs_spawn or {}
 
 BBS.SpawnMenuDisabled = BBS.SpawnMenuDisabled or false -- a config value for admins to use whether new ui or default ui (not editable)
