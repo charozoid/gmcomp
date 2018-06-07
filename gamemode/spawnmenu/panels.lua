@@ -98,6 +98,15 @@ function PANEL:Init()
 			local prop = iclay:Add("SpawnIcon")
 			prop:SetModel(model)
 			prop:SetTooltip(model)
+			prop.PaintOver = function(s,w,h)
+				surface.SetDrawColor(30,30,30)
+				surface.DrawRect(0,0,w,h)
+
+				draw.DrawText("You cant\nspawn this\nany more!","Roboto16-300",w/2,3,color_white,TEXT_ALIGN_CENTER)
+				surface.DrawTexturedRect(w/2-8,h/2,16,16)
+				surface.SetDrawColor(255,255,255)
+				//surface.SetMaterial(string materialName,boolean forceMaterial=false)
+			end
 			prop.DoClick = function()
 				RunConsoleCommand("gm_spawn", model)
 			end			

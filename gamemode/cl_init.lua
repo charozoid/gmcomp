@@ -7,6 +7,9 @@ include("rounds/shared.lua")
 include("minigames/cl_init.lua")
 include("minigames/shared.lua")
 
+include("prop_protection/cl_init.lua")
+include("prop_protection/shared.lua")
+
 include("spawnmenu/cl_spawnmenu.lua")
 
 local nicephases = {"Prebuild Phase", "Build Phase", "Voting Phase"}

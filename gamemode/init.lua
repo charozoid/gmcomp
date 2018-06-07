@@ -5,6 +5,9 @@ include("rounds/shared.lua")
 include("minigames/init.lua")
 include("minigames/shared.lua")
 
+include("prop_protection/init.lua")
+include("prop_protection/shared.lua")
+
 AddCSLuaFile("shared.lua")
 
 AddCSLuaFile("rounds/shared.lua")
@@ -12,6 +15,9 @@ AddCSLuaFile("rounds/cl_init.lua")
 
 AddCSLuaFile("minigames/shared.lua")
 AddCSLuaFile("minigames/cl_init.lua")
+
+AddCSLuaFile("prop_protection/shared.lua")
+AddCSLuaFile("prop_protection/cl_init.lua")
 
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("cl_fonts.lua")
