@@ -12,7 +12,7 @@ hook.Add("HUDPaint","bbsprops_drawowner",function()
 		draw.SimpleText(owner,"Roboto19-300",x+2.5,y,color_white)
 	end
 end)
-/*
+--[[
 TESTING ZONE :p
 hook.Add("PostDrawViewModel","bbsprops_physgundraw",function(viewModel, ply, weapon)
 	if ply==LocalPlayer() and IsValid(weapon) and ply:Alive() and weapon:GetClass()=="weapon_physgun" then
@@ -40,4 +40,4 @@ hook.Add("PostDrawViewModel","bbsprops_physgundraw",function(viewModel, ply, wea
 			cam.End3D2D()			
 		end
 	end
-end)*/
+end)]]--

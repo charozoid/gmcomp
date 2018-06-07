@@ -98,6 +98,7 @@ function PANEL:Init()
 			local prop = iclay:Add("SpawnIcon")
 			prop:SetModel(model)
 			prop:SetTooltip(model)
+--[[		TESTING ZONE
 			prop.PaintOver = function(s,w,h)
 				surface.SetDrawColor(30,30,30)
 				surface.DrawRect(0,0,w,h)
@@ -106,7 +107,7 @@ function PANEL:Init()
 				surface.DrawTexturedRect(w/2-8,h/2,16,16)
 				surface.SetDrawColor(255,255,255)
 				//surface.SetMaterial(string materialName,boolean forceMaterial=false)
-			end
+			end]]
 			prop.DoClick = function()
 				RunConsoleCommand("gm_spawn", model)
 			end			
