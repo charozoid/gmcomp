@@ -68,6 +68,7 @@ end
 ]]--
 function GM:PlayerInitialSpawn(ply)
 	local pl = ply
+	pl.SpawnedProps = {}
 	timer.Simple(5, function() 
 		if timer.Exists("RoundTimer") then
 			BBS:SendTimer(pl)

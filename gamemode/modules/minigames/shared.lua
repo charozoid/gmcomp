@@ -61,10 +61,25 @@ minigame.phases =
 		{["name"] = "Build", 
 		["time"] = 60,
 		["startfunc"] = function() 
-			print("This shit works")
+		if SERVER then
+			hook.Add("PlayerSpawnProp", "BBSGravTowerSpawn", function(ply, mdl)
+				if ply.SpawnedProps[mdl] then
+					return false
+				else
+					return true
+				end
+			end)
+			hook.Add("PlayerSpawnedProp", "BBSGravTowerSpawned", function(ply, mdl)
+				ply.SpawnedProps[mdl] = true
+			end)
+		end
 		end,
 		["endfunc"] = function() 
-			print("This shit works2")
+		if SERVER then
+			for k, v in pairs(player.GetAll()) do
+				v:StripWeapons()
+			end
+		end
 		end}, 
 		{["name"] = "Vote", 
 		["time"] = 10,
@@ -72,7 +87,14 @@ minigame.phases =
 			print("This shit works3")
 		end,
 		["endfunc"] = function() 
-			print("This shit works4")
+			if SERVER then
+				for k, v in pairs(player.GetAll()) do
+					v.SpawnedProp = {}
+					v:Spawn()
+				end
+				hook.Remove("BBSGravTowerSpawn")
+				hook.Remove("BBSGravTowerSpawned")
+			end
 		end}
 	}
 
