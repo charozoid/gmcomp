@@ -7,7 +7,7 @@ local ENTITY = FindMetaTable("Entity")
 --[[
 	Entity:GetBBSOwner(ply)
 	Gets the owner of entity.
---]]
+]]--
 function ENTITY:GetBBSOwner()
 	return self:GetNWEntity("bbs_owner",NULL)
 end

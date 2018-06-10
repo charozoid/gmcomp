@@ -6,14 +6,14 @@
 		- Client UI
 	I dont know if theres any bugs, I did a short test and everything was ok. It comes a bit stupid-
 	to me when prop owning is that short. There must be some stupidness and some bugs.
---]]
+]]--
 
 local ENTITY = FindMetaTable("Entity")
 
 --[[
 	Entity:SetBBSOwner(Player ply)
 	Sets the owner of entity.
---]]
+]]--
 function ENTITY:SetBBSOwner(ply)
 	if ply==nil or ply==NULL then -- if the owner is not valid
 		local owner = self:GetBBSOwner()
