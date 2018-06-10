@@ -61,39 +61,62 @@ minigame.phases =
 		{["name"] = "Build", 
 		["time"] = 60,
 		["startfunc"] = function() 
-		if SERVER then
-			hook.Add("PlayerSpawnProp", "BBSGravTowerSpawn", function(ply, mdl)
-				if ply.SpawnedProps[mdl] then
-					return false
-				else
-					return true
-				end
-			end)
-			hook.Add("PlayerSpawnedProp", "BBSGravTowerSpawned", function(ply, mdl)
-				ply.SpawnedProps[mdl] = true
-			end)
-		end
+			if SERVER then
+				hook.Add("PlayerSpawnProp", "BBSGravTowerSpawn", function(ply, mdl)
+					local ret = true
+					for _, ent in pairs(ply:GetBBSEntities()) do
+						if ent:GetModel()==mdl then
+							ret = false
+						end
+					end
+					return ret
+				end)
+			end
 		end,
 		["endfunc"] = function() 
-		if SERVER then
-			for k, v in pairs(player.GetAll()) do
-				v:StripWeapons()
+			if SERVER then
+				for _, ply in pairs(player.GetAll()) do
+					ply:StripWeapons()
+					ply.highestprop = 0
+					ply.highestprop_prop = NULL
+
+					for __, ent in pairs(ply:GetBBSEntities()) do
+						if ent:GetClass()=="prop_physics" then
+							local maxs = ent:OBBMaxs()
+							maxs = maxs:Rotate(ent:GetAngles())
+
+							if maxs.z>=ply.highestprop then
+								ply.highestprop = maxs.z
+								ply.highestprop_prop = ent
+							end
+						end
+					end
+				end
 			end
-		end
 		end}, 
 		{["name"] = "Vote", 
 		["time"] = 10,
 		["startfunc"] = function() 
-			print("This shit works3")
+			if SERVER then
+				local svhighest = 0
+				local svhighest_player = NULL
+				for _, ply in pairs(player.GetAll()) do
+					if ply.highestprop>svhighest then
+						svhighest = ply.highestprop
+						svhighest_player = ply
+					end 
+				end
+
+				PrintMessage(HUD_PRINTTALK,svhighest_player:Nick().." builded the highest tower!")
+			end
 		end,
 		["endfunc"] = function() 
 			if SERVER then
-				for k, v in pairs(player.GetAll()) do
-					v.SpawnedProp = {}
-					v:Spawn()
+				for _, ply in pairs(player.GetAll()) do
+					ply:Spawn()
+					ply.highestprop = nil
 				end
 				hook.Remove("BBSGravTowerSpawn")
-				hook.Remove("BBSGravTowerSpawned")
 			end
 		end}
 	}
