@@ -2,31 +2,44 @@
 
 BBSProps = BBSProps or {}
 
-local META = FindMetaTable("Entity")
+local ENTITY = FindMetaTable("Entity")
 
 --[[
 	Entity:GetBBSOwner(ply)
 	Gets the owner of entity.
 --]]
-function META:GetBBSOwner()
+function ENTITY:GetBBSOwner()
 	return self:GetNWEntity("bbs_owner",NULL)
 end
 
+local PLAYER = FindMetaTable("Player")
+
+--[[
+	Player:CanTouch(Entity ent)
+	Returns if player is allowed to touch/interact with that entity.
+]]--
+function PLAYER:CanTouch(ent)
+	return ent:GetBBSOwner()==self
+end
+
 hook.Add("PhysgunPickup","bbsprops_physgunpickup",function(ply, ent)
-	if ent:GetBBSOwner()!=ply then
+	--[[
+		Could made like return ply:CanTouch(ent) but it is risky. It can override other hooks.
+	]]--
+	if not ply:CanTouch(ent) then
 		return false
-	end
+	end 
 end)
 
 hook.Add("CanTool","bbsprops_cantool",function(ply, tr, tool)
 	local ent = tr.Entity
-	if IsValid(ent) and ent:GetBBSOwner()!=ply then
+	if not ply:CanTouch(ent) then
 		return false
-	end
+	end 
 end)
 
 hook.Add("CanProperty","bbsprops_canproperty",function(ply, property, ent)
-	if ent:GetBBSOwner()!=ply then
+	if not ply:CanTouch(ent) then
 		return false
-	end
+	end 
 end)

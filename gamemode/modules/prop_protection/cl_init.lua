@@ -9,9 +9,15 @@ hook.Add("HUDPaint","bbsprops_drawowner",function()
 		local owner = ent:GetBBSOwner()==NULL and "world" or ent:GetBBSOwner():Nick()
 		w = surface.GetTextSize(owner)
 		surface.DrawRect(x,y,w+7,h)
-		draw.SimpleText(owner,"Roboto19-300",x+2.5,y,color_white)
+		draw.SimpleText(owner,"Roboto19-300",x+2.5,y,LocalPlayer():CanTouch(ent) and Color(17,161,17) or Color(161,17,17))
 	end
 end)
+/*
+hook.Add("PostDrawOpaqueRenderables","asdasd",function()
+	for _, ent in pairs(ents.GetAll()) do
+		render.DrawWireframeBox(ent:GetPos(),ent:GetAngles(),ent:OBBMins(),ent:OBBMaxs(),ent:GetColor())
+	end
+end)*/
 --[[
 TESTING ZONE :p
 hook.Add("PostDrawViewModel","bbsprops_physgundraw",function(viewModel, ply, weapon)

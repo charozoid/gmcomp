@@ -54,7 +54,7 @@ BBS:AddMinigame(minigame)
 
 local minigame = {}
 
-minigame.name = "Random Props"
+minigame.name = "Highest Tower"
 minigame.loadout = {"weapon_physcannon"}
 minigame.phases = 
 	{

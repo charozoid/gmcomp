@@ -34,7 +34,7 @@ function bbs_spawn:OpenDef()
 		if g_SpawnMenu.shifter then return end
 		g_SpawnMenu.shifter = vgui.Create("DFrame")
 		g_SpawnMenu.shifter:SetParent(g_SpawnMenu)
-		g_SpawnMenu.shifter:SetSize(85,16)
+		g_SpawnMenu.shifter:SetSize(64,16)
 		g_SpawnMenu.shifter:SetPos(40,33)
 		g_SpawnMenu.shifter:ShowCloseButton(false)
 		g_SpawnMenu.shifter:SetDraggable(false)

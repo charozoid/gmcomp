@@ -21,3 +21,9 @@ surface.CreateFont("Roboto19-300", {
 	size = 19,
 	weight = 300,
 })
+
+surface.CreateFont("Roboto28-300", {
+	font = "Roboto", 
+	size = 28,
+	weight = 300,
+})

@@ -3,6 +3,7 @@ local PANEL = {}
 function PANEL:Init()
 	self:SetTextColor(color_white)
 	self:SetFont("Roboto16-300")
+	self.isclicked = false
 end
 
 function PANEL:Paint(w,h)
@@ -12,10 +13,22 @@ function PANEL:Paint(w,h)
 		else
 			surface.SetDrawColor(35,35,35)
 		end
+
+		if self.isclicked and self.istoggle then
+			surface.SetDrawColor(50,50,50)
+		end		
 	else
 		surface.SetDrawColor(30,30,30)
 	end
 	surface.DrawRect(0,0,w,h)
+end
+
+function PANEL:SetClicked(bool)
+	self.isclicked = bool
+end
+
+function PANEL:SetToggle(bool)
+	self.istoggle = bool
 end
 
 function PANEL:PerformLayout(w,h)
@@ -29,14 +42,30 @@ vgui.Register("BBS-Button", PANEL, "DButton")
 
 local PANEL = {}
 
-function PANEL:AddButton(name, func, dock_type, clickable)
+function PANEL:Init()
+	self.buttons = {}
+	self.button_clicked = nil
+end
+
+function PANEL:AddButton(name, func, dock_type, clickable, toggle)
 	local button = vgui.Create("BBS-Button",self)
+	func = func or function() end
 	if isbool(clickable) then
 		button:SetEnabled(clickable)
 	end
 	button:Dock(dock_type or LEFT)
 	button:SetText(name)
-	button.DoClick = func or function() end
+	button:SetToggle(toggle)
+	button.DoClick = function(...)
+		if self.button_clicked then
+			self.button_clicked:SetClicked(false)
+		end
+		self.button_clicked = button
+		button:SetClicked(true)
+
+		return func(...)
+	end
+	table.insert(self.buttons,button)
 end
 
 function PANEL:Paint(w,h)
@@ -81,7 +110,11 @@ function PANEL:Init()
 
 	self.panel = vgui.Create("DPanel",self)
 	self.panel:Dock(FILL)
-	self.panel.Paint = function(s,w,h) end
+	self.panel.Paint = function(s,w,h)
+		if s.nothingfound then
+			draw.SimpleText("Nothing found! :(","Roboto28-300",w/2,h/2-15,color_white,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		end
+	end
 	self.panel:DockPadding(5,5,5,5)
 
 	self.navbar = vgui.Create("BBS-NavBar",self)
@@ -89,6 +122,7 @@ function PANEL:Init()
 	self.navbar:SetTall(32)
 	self.navbar:AddButton("Props",function()
 		self.panel:Clear()
+		self.panel.nothingfound = false
 		local iclay = vgui.Create("DIconLayout",self.panel)
 		iclay:Dock(FILL)
 		iclay:SetSpaceX(5)
@@ -112,8 +146,12 @@ function PANEL:Init()
 				RunConsoleCommand("gm_spawn", model)
 			end			
 		end
-	end)
-	
+		if #BBS.AllowedProps==0 then
+			self.panel.nothingfound = true
+		end
+	end, LEFT, true, true)
+	self.navbar.last_bbs = BBS.AllowedProps
+
 	self.toolpanel = vgui.Create("DFrame")
 	self.toolpanel:SetTitle("")
 	self.toolpanel:SetDraggable(false)
@@ -176,6 +214,10 @@ function PANEL:Open()
 		self.shifter:SetMouseInputEnabled(false)
 		self.shifter:SetVisible(false)
 	end
+
+	if #self.navbar.buttons>0 and (self.navbar.button_clicked==nil or self.navbar.last_bbs!=BBS.AllowedProps) then
+		self.navbar.buttons[1]:DoClick()
+	end
 end
 
 function PANEL:Close()
@@ -192,6 +234,8 @@ function PANEL:Close()
 		panel:SetMouseInputEnabled(false)
 		panel:SetVisible(false)
 	end
+
+	self.navbar.last_bbs = BBS.AllowedProps
 end
 
 vgui.Register("BBS-SpawnMenu", PANEL, "DFrame")
