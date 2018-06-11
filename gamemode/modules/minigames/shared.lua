@@ -6,7 +6,7 @@
 
 function BBS:AddMinigame(tbl)
 	local count = #self.Minigames + 1
-	self.Minigames[count] = {["id"] = count, ["name"] = tbl.name, ["loadout"] = tbl.loadout, ["tools"] = tbl.customtools, ["phases"] = tbl.phases, ["propfunc"] = tbl.propfunc}
+	self.Minigames[count] = {["id"] = count, ["name"] = tbl.name, ["loadout"] = tbl.loadout, ["tools"] = tbl.tools, ["phases"] = tbl.phases, ["propfunc"] = tbl.propfunc}
 end
 
 local minigame = {}
@@ -37,7 +37,7 @@ minigame.phases = {
 	}
 }
 
-minigame.customtools = {"weld", "axis", "wheel"}
+minigame.tools = {"weld", "axis", "wheel"}
 minigame.propfunc = function()
 		if SERVER then
 			BBS:PickRandomProps(10)
@@ -187,7 +187,7 @@ minigame.phases =
 	}
 
 
-minigame.customtools = nil
+minigame.tools = nil
 minigame.propfunc = function()
 		if SERVER then
 			BBS:PickRandomProps(10)
@@ -211,8 +211,8 @@ end
 	Returns tools used in the minigame if there is any
 ]]--
 function BBS:GetMinigameTools()
-	if not self:GetMinigame() or not self:GetMinigame().customtools then
+	if not self:GetMinigame() or not self:GetMinigame().tools then
 		return nil
 	end
-	return self:GetMinigame().customtools
+	return self:GetMinigame().tools
 end

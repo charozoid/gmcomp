@@ -41,6 +41,8 @@ function GM:HUDPaint()
 			surface.SetDrawColor(68,164,68)
 		end
 		surface.DrawRect(5,5,smoother,tall)
+		surface.SetDrawColor(0,0,0,100)
+		surface.DrawRect(5,tall+5-4,smoother,4)
 		draw.SimpleText(BBS:GetPhaseName(),"Roboto24-300",wid/2+5,20,color_white,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 
 		surface.SetDrawColor(35,35,35)
