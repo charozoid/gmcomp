@@ -88,6 +88,7 @@ function BBS:Initialize()
 	SetGlobalInt("RoundState", 0)
 	SetGlobalInt("Minigame", 0)
 	SetGlobalInt("ThemeID", 0)
+	self.Votes = {}
 end
 
 --[[

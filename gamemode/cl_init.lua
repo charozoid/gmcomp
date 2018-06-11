@@ -24,7 +24,7 @@ function GM:HUDPaint()
 	-- name: nicephases[GetGlobalInt("RoundState")]
 	if timer.Exists("RoundTimer") then
 		local wid, tall = 200, 30
-		if not BBS:GetPhaseTotalTime() or not BBS.GetPhaseTimeLeft() then return end
+		if not BBS:GetPhaseTotalTime() or not BBS.GetPhaseTimeLeft() then print("no") return end
 		local phasetime = BBS:GetPhaseTotalTime()
 		local remtime = BBS.GetPhaseTimeLeft()
 		if not phasetime or not remtime then return end

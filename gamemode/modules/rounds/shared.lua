@@ -67,35 +67,16 @@ end
 	Returns the current phase total time
 ]]--
 function BBS:GetPhaseTotalTime()
-	local roundstate = GetGlobalInt("RoundState")
-	if self:GetMinigame() then
-		return self:GetMinigame().phases[roundstate].time
+	if SERVER then
+		local roundstate = GetGlobalInt("RoundState")
+		if self:GetMinigame() then
+			return self:GetMinigame().phases[roundstate].time
+		end
+	elseif CLIENT then
+		if self:GetMinigame() and BBS.RoundState ~= 0 then
+			return self:GetMinigame().phases[BBS.RoundState].time
+		else
+			return nil
+		end
 	end
-end
---[[
-	BBS:GetPhaseName()
-	Returns the current phase name
-]]--
-function BBS:GetPhaseName()
-	local roundstate = GetGlobalInt("RoundState")
-	return self:GetMinigame().phases[roundstate].name
-end
---[[
-	BBS:GetNextPhaseName()
-	Returns the current phase name
-]]--
-function BBS:GetNextPhaseName()
-	local roundstate = GetGlobalInt("RoundState") + 1
-	if roundstate > #self:GetMinigame().phases then
-		return "End"
-	else
-		return self:GetMinigame().phases[roundstate].name
-	end
-end
---[[
-	BBS.GetPhaseTimeLeft()
-	Returns the remaining time to the current phase
-]]--
-function BBS.GetPhaseTimeLeft()
-	return math.ceil(timer.TimeLeft("RoundTimer"))
 end

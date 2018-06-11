@@ -24,10 +24,6 @@ for k, v in pairs(modules) do
 	print("Added module "..v)
 end
 
-
-/*AddCSLuaFile("spawnmenu/cl_spawnmenu.lua")
-AddCSLuaFile("spawnmenu/panels.lua")*/
-
 local defaultloadout = {"weapon_physgun", "weapon_physcannon", "gmod_tool", "gmod_camera" }
 --[[
 	GM:PlayerLoadout(ply)
@@ -148,4 +144,25 @@ function GM:CanTool(ply, tr, tool)
 	else
 		return true
 	end
+end
+
+function BBS:GetVotes()
+	PrintTable(self.Votes)
+	return self.Votes
+end
+function BBS:GetHighestVoted()
+	local votebl = self:GetVotes()
+end
+
+local meta = FindMetaTable("Player")
+
+function meta:Vote(ply)
+	local votes = BBS:GetVotes()
+	PrintTable(votes)
+	local id64 = ply:SteamID64()
+	votes[id64] = votes[id64] + 1
+end
+
+function meta:GetVotesNumber()
+	return BBS:GetVotes()[self:SteamID64()]
 end
