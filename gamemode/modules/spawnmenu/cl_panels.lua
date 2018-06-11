@@ -170,6 +170,11 @@ function PANEL:Init()
 		/*surface.SetDrawColor(30,30,30)
 		surface.DrawRect(0,0,w,28)*/
 	end
+
+	self.toolpanel.panel = vgui.Create("DPanel",self.toolpanel)
+	self.toolpanel.panel:Dock(FILL)
+	self.toolpanel.panel.Paint = function() end
+	self.toolpanel.panel.lasttools = BBS:GetMinigameTools()
 end
 
 function PANEL:AdjustTP() -- adjust tp to cursize/curpos
@@ -217,6 +222,17 @@ function PANEL:Open()
 
 	if #self.navbar.buttons>0 and (self.navbar.button_clicked==nil or self.navbar.last_bbs!=BBS.AllowedProps) then
 		self.navbar.buttons[1]:DoClick()
+	end
+
+	if self.toolpanel.lasttools!=BBS:GetMinigameTools() then
+		self.toolpanel.panel:Clear()
+		for _, tool in pairs(BBS:GetMinigameTools()) do
+			local toolbut = vgui.Create("BBS-Button",self.toolpanel.panel)
+			toolbut:SetText(tool)
+			toolbut.DoClick = function()
+
+			end
+		end
 	end
 end
 

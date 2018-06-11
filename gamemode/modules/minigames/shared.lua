@@ -205,10 +205,14 @@ function BBS:GetMinigame()
 	if GetGlobalInt("Minigame") == 0 then return false end
 	return self.Minigames[GetGlobalInt("Minigame")]
 end
+
 --[[
 	BBS:GetMinigameTools()
-	Returns the Minigame tools
+	Returns tools used in the minigame if there is any
 ]]--
 function BBS:GetMinigameTools()
-	return self:GetMinigame().tools
+	if not self:GetMinigame() or not self:GetMinigame().customtools then
+		return nil
+	end
+	return self:GetMinigame().customtools
 end
