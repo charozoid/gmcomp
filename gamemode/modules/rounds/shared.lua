@@ -16,12 +16,15 @@ function BBS:StartRoundTimer()
 			BBS.AllowedProps = {}
 		return
 	end
-	self:GetMinigame().phases[roundstate].startfunc()
+	if self:GetMinigame().phases[roundstate].startfunc then
+		self:GetMinigame().phases[roundstate].startfunc()
+	end
 	timer.Create("RoundTimer", self:GetMinigame().phases[roundstate].time, 1, function()
-		BBS:GetMinigame().phases[roundstate].endfunc()
+		if BBS:GetMinigame().phases[roundstate].endfunc then
+			BBS:GetMinigame().phases[roundstate].endfunc()
+		end
 		BBS.RoundState = roundstate + 1
 		BBS:StartRoundTimer()
-
 	end)
 	end
 	if SERVER then
@@ -45,12 +48,15 @@ function BBS:StartRoundTimer()
 		self:StartCLTimer()
 	end
 
-	self:GetMinigame().phases[roundstate].startfunc()
+	if self:GetMinigame().phases[roundstate].startfunc then
+		self:GetMinigame().phases[roundstate].startfunc()
+	end
 	timer.Create("RoundTimer", self:GetMinigame().phases[roundstate].time, 1, function()
-		BBS:GetMinigame().phases[roundstate].endfunc()
+		if BBS:GetMinigame().phases[roundstate].endfunc then
+			BBS:GetMinigame().phases[roundstate].endfunc()
+		end
 		SetGlobalInt("RoundState", GetGlobalInt("RoundState") + 1)
 		BBS:StartRoundTimer()
-
 	end)
 	end
 end

@@ -17,7 +17,7 @@ local ENTITY = FindMetaTable("Entity")
 function ENTITY:SetBBSOwner(ply)
 	if ply==nil or ply==NULL then -- if the owner is not valid
 		local owner = self:GetBBSOwner()
-		if owner and owner:IsPlayer() then
+		if owner and owner:IsPlayer() and owner.BBSEnts then
 			table.RemoveByValue(owner.BBSEnts,self)
 		end
 		self:SetNWEntity("bbs_owner",NULL)
