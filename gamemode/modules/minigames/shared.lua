@@ -66,6 +66,8 @@ if CLIENT then
 		bbsminigame_gtowers.prop = net.ReadEntity()
 		bbsminigame_gtowers.pos = net.ReadVector()
 		bbsminigame_gtowers.stopat = CurTime()+BBS:GetMinigame().phases[#BBS:GetMinigame().phases].time -- get the showcase phase's time
+	
+		chat.AddText(Color(17,161,17),"[Gravity Towers] ",color_white,bbsminigame_gtowers.ply.." builded the highest tower!")
 	end)
 
 	hook.Add("PostDrawTranslucentRenderables","bbsminigame_gtowers",function()
