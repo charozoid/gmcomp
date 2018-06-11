@@ -9,13 +9,13 @@ end
 function PANEL:Paint(w,h)
 	if not self:GetDisabled() then
 		if self:IsHovered() then
-			surface.SetDrawColor(40,40,40)
+			surface.SetDrawColor(37.5,37.5,37.5)
 		else
 			surface.SetDrawColor(35,35,35)
 		end
 
 		if self.isclicked and self.istoggle then
-			surface.SetDrawColor(50,50,50)
+			surface.SetDrawColor(45,45,45)
 		end		
 	else
 		surface.SetDrawColor(30,30,30)
@@ -226,13 +226,20 @@ function PANEL:Open()
 
 	if self.toolpanel.lasttools!=BBS:GetMinigameTools() then
 		self.toolpanel.panel:Clear()
-		for _, tool in pairs(BBS:GetMinigameTools()) do
-			local toolbut = vgui.Create("BBS-Button",self.toolpanel.panel)
-			toolbut:SetText(tool)
-			toolbut.DoClick = function()
-
+		if BBS:GetMinigameTools() then
+			for _, tool in pairs(BBS:GetMinigameTools()) do
+				local toolbut = vgui.Create("BBS-Button",self.toolpanel.panel)
+				toolbut:Dock(TOP)
+				toolbut:SetTall(25)
+				toolbut:SetText("#tool."..tool..".name")
+				toolbut:SetToggle(true)
+				toolbut.DoClick = function()
+					LocalPlayer():ConCommand("use gmod_tool")
+					LocalPlayer():ConCommand("gmod_toolmode "..tool)
+				end
 			end
 		end
+		self.toolpanel.lasttools = BBS:GetMinigameTools()
 	end
 end
 
