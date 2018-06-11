@@ -34,22 +34,25 @@ local defaultloadout = {"weapon_physgun", "weapon_physcannon", "gmod_tool", "gmo
 	Controls gamemode loadout or uses default loadout
 ]]--
 function GM:PlayerLoadout(ply)
-	if BBS:GetMinigame() then
-		local gmloadout = BBS:GetMinigame().loadout
-		if gmloadout then
-			for k,v in pairs(gmloadout) do
-				ply:Give(v)
+	local pl = ply
+	pl:StripWeapons()
+	timer.Simple(1.25, function()
+		if BBS:GetMinigame() then
+			local gmloadout = BBS:GetMinigame().loadout
+			if gmloadout then
+				for k,v in pairs(gmloadout) do
+					pl:Give(v)
+				end
+				return true
 			end
-			return true
 		end
-	end
 
-	for k,v in pairs(defaultloadout) do
-		ply:Give(v)
-	end
+		for k,v in pairs(defaultloadout) do
+			pl:Give(v)
+		end
 
 	return true
-
+end)
 end
 --[[
 	GM:PlayerSpawnProp(ply, model)
@@ -77,10 +80,10 @@ function GM:PlayerInitialSpawn(ply)
 end
 
 --[[
-	BBS:RandomTheme
-	Returns random theme
+	BBS:SetRandomTheme
+	Selects a random theme
 ]]--
-function BBS:GetRandomTheme()
+function BBS:SetRandomTheme()
 	local int = math.random(#self.Themes)
 	SetGlobalInt("ThemeID", int)
 end
@@ -128,22 +131,21 @@ function BBS:PickProps(propidtable)
 	end
 	self:AllowProps(idtbl)
 end
---[[
-	BBS:AllowProps(table propindex)
-	Adds the prop to the allowedprops table and networks to the client
-]]--
-util.AddNetworkString("BBSPropList")
 
-function BBS:AllowProps(tbl)
-	self.AllowedProps = {}
-	local len = #tbl
-
-	net.Start("BBSPropList")
-		net.WriteInt(len, 16)
-
-		for k,v in ipairs(tbl) do
-			net.WriteInt(v, 16)
-			self.AllowedProps[self.PropList[v]] = true
+function GM:CanTool(ply, tr, tool)
+	if BBS:GetMinigame() then
+		if BBS:GetMinigameTools() then
+			for k,v in pairs(BBS:GetMinigameTools()) do
+				if tool == v then 
+					return true
+				else
+					return false
+				end
+			end
+		else
+			return false
 		end
-	net.Broadcast()
+	else
+		return true
+	end
 end

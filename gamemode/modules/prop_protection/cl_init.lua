@@ -12,6 +12,16 @@ hook.Add("HUDPaint","bbsprops_drawowner",function()
 		draw.SimpleText(owner,"Roboto19-300",x+2.5,y,LocalPlayer():CanTouch(ent) and Color(17,161,17) or Color(161,17,17))
 	end
 end)
+
+net.Receive("BBSPropList", function()
+	BBS.AllowedProps = {}
+	local len = net.ReadInt(16)
+	
+	for i=1, len do
+		local id = net.ReadInt(16)
+		BBS.AllowedProps[i] = BBS.PropList[id]
+	end
+end)
 /*
 hook.Add("PostDrawOpaqueRenderables","asdasd",function()
 	for _, ent in pairs(ents.GetAll()) do

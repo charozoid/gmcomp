@@ -43,3 +43,7 @@ hook.Add("CanProperty","bbsprops_canproperty",function(ply, property, ent)
 		return false
 	end 
 end)
+
+function BBS:GetAllowedProps()
+	return self.AllowedProps
+end

@@ -5,7 +5,7 @@
 function BBS:StartRoundTimer()
 	if CLIENT then
 	local roundstate = self.RoundState
-	local gmphaseslen = #self:GetMinigame().phases
+	local gmphaseslen = #self:GetMinigame().phases or 0
 
 	if timer.Exists("RoundTimer") then
 		timer.Destroy("RoundTimer")

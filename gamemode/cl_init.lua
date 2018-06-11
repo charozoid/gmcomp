@@ -18,14 +18,13 @@ for k, v in pairs(modules) do
 	print("Added module "..v)
 end
 
-local nicephases = {"Prebuild Phase", "Build Phase", "Voting Phase"}
-
 local smoother = 0
 function GM:HUDPaint()
 	-- time left: math.ceil(timer.TimeLeft("RoundTimer"))
 	-- name: nicephases[GetGlobalInt("RoundState")]
 	if timer.Exists("RoundTimer") then
 		local wid, tall = 200, 30
+		if not BBS:GetPhaseTotalTime() or not BBS.GetPhaseTimeLeft() then return end
 		local phasetime = BBS:GetPhaseTotalTime()
 		local remtime = BBS.GetPhaseTimeLeft()
 		if not phasetime or not remtime then return end
@@ -49,14 +48,10 @@ function GM:HUDPaint()
 		--draw.SimpleText(nicephases[GetGlobalInt("RoundState")==#nicephases and 1 or GetGlobalInt("RoundState")+1],"Roboto24-300",wid/2+5,49,Color(100,100,100),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 		draw.SimpleText(BBS:GetNextPhaseName(),"Roboto24-300",wid/2+5,49,Color(100,100,100),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 	end
-end
-
-net.Receive("BBSPropList", function()
-	BBS.AllowedProps = {}
-	local len = net.ReadInt(16)
-	
-	for i=1, len do
-		local id = net.ReadInt(16)
-		BBS.AllowedProps[i] = BBS.PropList[id]
+	if BBS:GetTheme() then
+		surface.SetTextColor(255, 0, 0)
+		surface.SetFont("Roboto16-300")
+		surface.SetTextPos(100, 100)
+		surface.DrawText(""..BBS:GetTheme().name)
 	end
-end)
+end

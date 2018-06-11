@@ -86,3 +86,22 @@ hook.Add("PlayerDisconnected","bbsprops_playerdisconnected",function(ply)
 		ent:Remove()
 	end
 end)
+--[[
+	BBS:AllowProps(table propindex)
+	Adds the prop to the allowedprops table and networks to the client
+]]--
+util.AddNetworkString("BBSPropList")
+
+function BBS:AllowProps(tbl)
+	self.AllowedProps = {}
+	local len = #tbl
+
+	net.Start("BBSPropList")
+		net.WriteInt(len, 16)
+
+		for k,v in ipairs(tbl) do
+			net.WriteInt(v, 16)
+			self.AllowedProps[self.PropList[v]] = true
+		end
+	net.Broadcast()
+end

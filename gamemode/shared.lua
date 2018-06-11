@@ -95,8 +95,8 @@ end
 	Add a theme with a choice of customtools and customprops
 ]]--
 function BBS:AddTheme(name)
-	local count = #self.Themes
-	self.Themes[count] = {["name"] = name}
+	local count = #self.Themes + 1
+	self.Themes[count] = {["name"] = name, ["id"] = count}
 end
 
 BBS:AddTheme("Car")
@@ -106,5 +106,24 @@ BBS:AddTheme("Car")
 	Returns the current selected theme
 ]]--
 function BBS:GetTheme()
+	if GetGlobalInt("ThemeID") == 0 then return false end
 	return self.Themes[GetGlobalInt("ThemeID")]
+end
+--[[
+	BBS:GetThemes()
+	Returns the theme table
+]]--
+function BBS:GetThemes()
+	return self.Themes
+end
+--[[
+	BBS:GetMinigameTools()
+	Returns tools used in the minigame if there is any
+]]--
+function BBS:GetMinigameTools()
+	if self:GetMinigame().customtools then
+		return self:GetMinigame().customtools
+	else
+		return nil
+	end
 end

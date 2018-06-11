@@ -14,31 +14,25 @@ local minigame = {}
 minigame.name = "Random Props"
 minigame.loadout = nil
 minigame.phases = {
-	{	["name"] = "Prebuild", 
-		["time"] = 10,
-		["startfunc"] = function() 
-			print("Prebuild start")
-		end,
-		["endfunc"] = function() 
-			print("Prebuild end")
-		end
-	},
 	{	["name"] = "Build", 
-		["time"] = 10,
+		["time"] = 60,
 		["startfunc"] = function() 
-			print("Build start")
+			if SERVER then
+				BBS:SetRandomTheme()
+				BBS:PickRandomProps(50)
+			end
 		end,
 		["endfunc"] = function() 
-			print("Build end")
+
 		end
 	},
 	{	["name"] = "Vote", 
 		["time"] = 10,
 		["startfunc"] = function() 
-			print("Vote start")
+
 		end,
 		["endfunc"] = function() 
-			print("Vote end")
+
 		end
 	}
 }
@@ -107,6 +101,9 @@ minigame.phases =
 						end
 					end
 					return ret
+				end)
+				hook.Add("GravGunPunt", "BBSGravTowerPunt", function(ply, ent)
+					return false
 				end)
 			end
 		end,
@@ -183,7 +180,8 @@ minigame.phases =
 					ply:Spawn()
 					ply.highestprop = nil
 				end
-				hook.Remove("BBSGravTowerSpawn")
+				hook.Remove("PlayerSpawnProp", "BBSGravTowerSpawn")
+				hook.Remove("GravGunPunt", "BBSGravTowerPunt")
 			end
 		end}
 	}
@@ -204,6 +202,7 @@ minigame = nil
 	Returns the current Minigame table
 ]]--
 function BBS:GetMinigame()
+	if GetGlobalInt("Minigame") == 0 then return false end
 	return self.Minigames[GetGlobalInt("Minigame")]
 end
 --[[
