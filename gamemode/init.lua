@@ -131,12 +131,10 @@ end
 function GM:CanTool(ply, tr, tool)
 	if BBS:GetMinigame() then
 		if BBS:GetMinigameTools() then
-			for k,v in pairs(BBS:GetMinigameTools()) do
-				if tool == v then 
-					return true
-				else
-					return false
-				end
+			if BBS.AllowedTools[tool] then
+				return true
+			else
+				return false
 			end
 		else
 			return false
@@ -144,25 +142,4 @@ function GM:CanTool(ply, tr, tool)
 	else
 		return true
 	end
-end
-
-function BBS:GetVotes()
-	PrintTable(self.Votes)
-	return self.Votes
-end
-function BBS:GetHighestVoted()
-	local votebl = self:GetVotes()
-end
-
-local meta = FindMetaTable("Player")
-
-function meta:Vote(ply)
-	local votes = BBS:GetVotes()
-	PrintTable(votes)
-	local id64 = ply:SteamID64()
-	votes[id64] = votes[id64] + 1
-end
-
-function meta:GetVotesNumber()
-	return BBS:GetVotes()[self:SteamID64()]
 end
