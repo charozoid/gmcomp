@@ -25,9 +25,10 @@ function GM:HUDPaint()
 	if timer.Exists("RoundTimer") then
 		local wid, tall = 200, 30
 		if not BBS:GetPhaseTotalTime() or not BBS.GetPhaseTimeLeft() then return end
+
 		local phasetime = BBS:GetPhaseTotalTime()
 		local remtime = BBS.GetPhaseTimeLeft()
-		if not phasetime or not remtime then return end
+
 		local to = (phasetime-remtime)/phasetime*wid
 
 		smoother = Lerp(10*FrameTime(),smoother, to)
@@ -51,10 +52,17 @@ function GM:HUDPaint()
 		draw.SimpleText(BBS:GetNextPhaseName(),"Roboto24-300",wid/2+5,49,Color(100,100,100),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 	end
 	if BBS:GetTheme() then
-		surface.SetTextColor(255, 0, 0)
-		surface.SetFont("Roboto16-300")
-		surface.SetTextPos(100, 100)
-		surface.DrawText(""..BBS:GetTheme().name)
+		local name = BBS:GetTheme().name
+		local wid = surface.GetTextSize(BBS:GetTheme().name) + 75
+		local tall = 30
+		
+		surface.SetDrawColor(30,30,30)
+		surface.DrawRect(5, 70, wid, tall)
+
+		surface.SetTextColor(color_white)
+		surface.SetFont("Roboto24-300")
+		surface.SetTextPos(10, 75)
+		surface.DrawText("Theme:"..BBS:GetTheme().name)
 	end
 end
 

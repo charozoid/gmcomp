@@ -27,6 +27,7 @@ end
 ]]--
 function BBS:SetIdle()
 	SetGlobalInt("RoundState", 0)
+	SetGlobalInt("ThemeID", 0)
 	timer.Simple(1, function() SetGlobalInt("Minigame", 0) end) --Delay it a bit to let the client catch up
 end
 --[[

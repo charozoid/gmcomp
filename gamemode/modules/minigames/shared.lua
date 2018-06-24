@@ -20,6 +20,10 @@ minigame.phases = {
 			if SERVER then
 				BBS:SetRandomTheme()
 				BBS:PickRandomProps(50)
+				BBS.AllowedTools = {}
+				for k,v in pairs(BBS:GetMinigameTools()) do
+					BBS.AllowedTools[v] = true
+				end
 			end
 		end,
 		["endfunc"] = function() 

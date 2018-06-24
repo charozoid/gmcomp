@@ -24,10 +24,6 @@ for k, v in pairs(modules) do
 	print("Added module "..v)
 end
 
-
-/*AddCSLuaFile("spawnmenu/cl_spawnmenu.lua")
-AddCSLuaFile("spawnmenu/panels.lua")*/
-
 local defaultloadout = {"weapon_physgun", "weapon_physcannon", "gmod_tool", "gmod_camera" }
 --[[
 	GM:PlayerLoadout(ply)
@@ -135,12 +131,10 @@ end
 function GM:CanTool(ply, tr, tool)
 	if BBS:GetMinigame() then
 		if BBS:GetMinigameTools() then
-			for k,v in pairs(BBS:GetMinigameTools()) do
-				if tool == v then 
-					return true
-				else
-					return false
-				end
+			if BBS.AllowedTools[tool] then
+				return true
+			else
+				return false
 			end
 		else
 			return false

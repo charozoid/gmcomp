@@ -79,16 +79,15 @@ BBS.PropList = {
 "models/props_lab/harddrive02.mdl"
 }
 
+SetGlobalInt("RoundState", 0)
+SetGlobalInt("Minigame", 0)
+SetGlobalInt("ThemeID", 0)
+BBS.Votes = {}
 
 function GM:Initialize()
-	BBS:Initialize()
+
 end
 
-function BBS:Initialize()
-	SetGlobalInt("RoundState", 0)
-	SetGlobalInt("Minigame", 0)
-	SetGlobalInt("ThemeID", 0)
-end
 
 --[[
 	BBS:AddTheme(string name, table customtools, table customprops)
