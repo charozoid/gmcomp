@@ -126,3 +126,21 @@ function BBS:GetMinigameTools()
 		return nil
 	end
 end
+
+--[[
+	string.fromrand(text)
+	ex: print(string.fromrand("[Welcome back|Hello|Hi again|You are welcome|Welcome back to BuildBattles]!.")) prints something like Hello!
+	dunno how much its needed but.. I like it, it would make the gamemode more friendly and not as a stone hard machine
+	be sure you are not calling it from a repedately(not sure if its said that way) hook. call it for once.
+]]--
+function string.fromrand(rand)
+	for data in string.gmatch(rand,"%[(.-)%]") do -- for every >[...]< case
+		if not data:find("%|") then continue end -- if not there is any >|< in these brackets
+		local pair_table = string.Explode("|",data) -- explode that bracket case by >|< to get choices
+		local selected = pair_table[math.random(#pair_table)] -- select one from all choices
+		data = "["..data.."]" -- some debugging..
+		local data_escaped = data:gsub("(%W)", "%%%1") -- this thing replaces special characters to escape them from string pattern
+		rand = rand:gsub(data_escaped,selected,1) -- replace what we did
+	end
+	return rand
+end
