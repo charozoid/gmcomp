@@ -44,24 +44,30 @@ function GM:HUDPaint()
 		surface.DrawRect(5,5,smoother,tall)
 		surface.SetDrawColor(0,0,0,100)
 		surface.DrawRect(5,tall+5-4,smoother,4)
+		draw.SimpleText(BBS.RoundState.."/"..#BBS:GetMinigame().phases,"Roboto16-300",wid-4,20,color_white,TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
 		draw.SimpleText(BBS:GetPhaseName(),"Roboto24-300",wid/2+5,20,color_white,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 
 		surface.SetDrawColor(35,35,35)
 		surface.DrawRect(5,35,wid,tall)
 		--draw.SimpleText(nicephases[GetGlobalInt("RoundState")==#nicephases and 1 or GetGlobalInt("RoundState")+1],"Roboto24-300",wid/2+5,49,Color(100,100,100),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw.SimpleText(not (BBS.RoundState+1>#BBS:GetMinigame().phases) and ((BBS.RoundState+1).."/"..#BBS:GetMinigame().phases) or "","Roboto16-300",wid-4,49,Color(100,100,100),TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
 		draw.SimpleText(BBS:GetNextPhaseName(),"Roboto24-300",wid/2+5,49,Color(100,100,100),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 	end
 	if BBS:GetTheme() then
-		local name = BBS:GetTheme().name
-		local wid = surface.GetTextSize(BBS:GetTheme().name) + 75
-		local tall = 30
-		
-		surface.SetDrawColor(30,30,30)
-		surface.DrawRect(5, 70, wid, tall)
+		local wid, tall = 200, 20
+		local gap = 2.5 -- 6 if divider
+		local y = 65+gap
+		//local divider_tall = 4
 
-		surface.SetTextColor(color_white)
-		surface.SetFont("Roboto24-300")
-		surface.SetTextPos(10, 75)
-		surface.DrawText("Theme:"..BBS:GetTheme().name)
+		--[[surface.SetDrawColor(30,30,30)	
+		surface.DrawRect(5,y-(divider_tall/2+gap/2),wid,divider_tall)]]--
+
+		surface.SetDrawColor(30,30,30)	
+		surface.DrawRect(5,y,wid,tall)
+		surface.SetDrawColor(35,35,35)
+		surface.DrawRect(5+wid/2, y, wid/2, tall)
+
+		draw.SimpleText("THEME:","Roboto16-300",5+wid/4,y+tall/2,color_white,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw.SimpleText(BBS:GetTheme().name,"Roboto16-300",5+wid*3/4,y+tall/2,color_white,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 	end
 end

@@ -236,6 +236,16 @@ function PANEL:Open()
 				toolbut.DoClick = function()
 					LocalPlayer():ConCommand("use gmod_tool")
 					LocalPlayer():ConCommand("gmod_toolmode "..tool)
+					if self.toolpanel.panel.clicked and IsValid(self.toolpanel.panel.clicked) then
+						self.toolpanel.panel.clicked:SetClicked(false)
+					end	
+					self.toolpanel.panel.clicked = toolbut
+					toolbut:SetClicked(true)
+				end
+				toolbut.PaintOver = function(s,w,h)
+					if self.toolpanel.panel.clicked==s then
+						draw.SimpleText("●","Roboto16-300",10,h/2,color_white,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+					end
 				end
 			end
 		end
