@@ -14,6 +14,15 @@ function BBS:GetHighestVoted()
 		end
 	end
 
+	if #winnertbl > 1 then
+		local winners = {}
+		for k,v in pairs(winnertbl) do
+			table.insert(winners, player.GetBySteamID64(k))
+		end
+		
+	else
+		--win
+	end
 	PrintTable(winnertbl)
 end
 
