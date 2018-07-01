@@ -8,7 +8,7 @@ DeriveGamemode( "sandbox" )
 BBS = {}
 BBS.Minigames = {}
 BBS.Themes = {}
-
+BBS.Commands = {}
 --Setting global round states
 PHASE_IDLE = 0
 
