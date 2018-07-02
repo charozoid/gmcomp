@@ -106,6 +106,10 @@ minigame.phases = {
 					return ret
 				end)
 
+				hook.Add("PlayerSpawnedProp","BBSGravTowerSpawn",function(ply, mdl, ent)
+					ent:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
+				end)
+
 				hook.Add("GravGunPunt", "BBSGravTowerPunt", function(ply, ent)
 					return false
 				end)
@@ -138,6 +142,7 @@ minigame.phases = {
 						if ent:GetClass() == "prop_physics" then
 							if not IsValid(ent:GetPhysicsObject()) then continue end
 							ent:GetPhysicsObject():EnableMotion(false)
+							ent:SetCollisionGroup(COLLISION_GROUP_NONE)
 
 							for _, data in pairs(ent:GetPhysicsObject():GetMeshConvexes()) do
 								for __, vertex in pairs(data) do
@@ -192,6 +197,7 @@ minigame.phases = {
 					ply.highestprop = nil
 				end
 
+				hook.Remove("PlayerSpawnedProp", "BBSGravTowerSpawn")
 				hook.Remove("PlayerSpawnProp", "BBSGravTowerSpawn")
 				hook.Remove("GravGunPunt", "BBSGravTowerPunt")
 			end

@@ -1,3 +1,5 @@
+--BUTTON--
+
 local PANEL = {}
 
 function PANEL:Init()
@@ -40,6 +42,8 @@ end
 
 vgui.Register("BBS-Button", PANEL, "DButton")
 
+--NAVBAR--
+
 local PANEL = {}
 
 function PANEL:Init()
@@ -77,6 +81,8 @@ end
 
 vgui.Register("BBS-NavBar", PANEL, "DPanel")
 
+--SPAWNMENU--
+
 local PANEL = {}
 
 local r_w, r_h = 250, 0 -- tool panel's width and height
@@ -87,6 +93,7 @@ function PANEL:Init()
 	self:DockPadding(0,0,0,0)
 	self.kids = {}
 
+	--self.shifter is the button that allows you to shift through the default spawnmenu and cur one
 	self.shifter = vgui.Create("DFrame")
 	self.shifter.h = 16
 	self.shifter:SetSize(62,self.shifter.h)
@@ -150,6 +157,7 @@ function PANEL:Init()
 			self.panel.nothingfound = true
 		end
 	end, LEFT, true, true)
+	self.navbar:AddButton("Seats",function() end, LEFT, true, true)
 	self.navbar.last_bbs = BBS.AllowedProps
 
 	self.toolpanel = vgui.Create("DFrame")
@@ -173,24 +181,56 @@ function PANEL:Init()
 
 	self.toolpanel.panel = vgui.Create("DPanel",self.toolpanel)
 	self.toolpanel.panel:Dock(FILL)
-	self.toolpanel.panel.Paint = function() end
+	self.toolpanel.panel.Paint = function(s,w,h)
+		if s.nothingfound then
+			draw.SimpleText(":(","Roboto28-300",w/2,h/2-15,color_white,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		end
+	end
 	self.toolpanel.panel.lasttools = BBS:GetMinigameTools()
+
+	self.toolpanel.settings = vgui.Create("DFrame")
+	self.toolpanel.settings:SetTitle("")
+	self.toolpanel.settings:SetDraggable(false)
+	self.toolpanel.settings:ShowCloseButton(false)
+	self.toolpanel.settings:DockPadding(0,0,0,0)
+
+	self.toolpanel.settings.Paint = function(s,w,h)
+		surface.SetDrawColor(40,40,40)
+		surface.DrawRect(0,0,w,h)
+		--surface.SetDrawColor(30,30,30)
+		--surface.DrawRect(0,0,w,28)
+	end
+	self.toolpanel.settings.panel = vgui.Create("DPanel",self.toolpanel.settings)
+	self.toolpanel.settings.panel:Dock(FILL)
+	self.toolpanel.settings.panel.Paint = function(s,w,h)
+		if s.nothingfound then
+			draw.SimpleText(":(","Roboto28-300",w/2,h/2-15,color_white,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		end
+	end
+	--[[self.toolpanel.settings.scroll = vgui.Create("DScrollPanel",self.toolpanel.settings)
+	self.toolpanel.settings.scroll.panel = vgui.Create("DPanel",self.toolpanel.settings.scroll)
+	self.toolpanel.settings.scroll.panel:Dock(FILL)]]
+	table.insert(self.kids,self.toolpanel.settings)
 end
 
 function PANEL:AdjustTP() -- adjust tp to cursize/curpos
 	local sw, sh = self:GetSize()
 	r_h = sh -- set tool panels height to our height
+	local settings_h, gap = 400, 5
 	self:SetSize(sw-r_w-10,sh) -- 10 is the gap
-	self.toolpanel:SetSize(r_w,r_h)
+	self.toolpanel:SetSize(r_w,r_h-(settings_h+gap))
 	self.toolpanel:SetPos(select(1,self:GetPos())+select(1,self:GetSize())+10,select(2,self:GetPos()))
+	self.toolpanel.settings:SetSize(r_w,settings_h)
+	self.toolpanel.settings:SetPos(select(1,self:GetPos())+select(1,self:GetSize())+10,select(2,self:GetPos())+r_h-(settings_h+gap)+gap)
+	--self.toolpanel.settings.scroll:SetSize(r_w,settings_h)
 	self.shifter:SetPos(select(1,self:GetPos()),select(2,self:GetPos())-self.shifter.h)
 end
 
 function PANEL:Paint(w,h)
 	surface.SetDrawColor(40,40,40)
 	surface.DrawRect(0,0,w,h)
-	/*surface.SetDrawColor(30,30,30)
-	surface.DrawRect(0,0,w,28)	*/
+	--surface.SetDrawColor(30,30,30)
+	--surface.DrawRect(0,0,w,28)
 end
 
 function PANEL:Open()
@@ -223,8 +263,8 @@ function PANEL:Open()
 	if #self.navbar.buttons>0 and (self.navbar.button_clicked==nil or self.navbar.last_bbs!=BBS.AllowedProps) then
 		self.navbar.buttons[1]:DoClick()
 	end
-
-	if self.toolpanel.lasttools!=BBS:GetMinigameTools() then
+			print("opened")
+	if (self.toolpanel.lasttools!=BBS:GetMinigameTools()) then
 		self.toolpanel.panel:Clear()
 		if BBS:GetMinigameTools() then
 			for _, tool in pairs(BBS:GetMinigameTools()) do
@@ -233,14 +273,46 @@ function PANEL:Open()
 				toolbut:SetTall(25)
 				toolbut:SetText("#tool."..tool..".name")
 				toolbut:SetToggle(true)
+				toolbut:SetTooltip(spawnmenu.FindTool(tool).Category)
 				toolbut.DoClick = function()
 					LocalPlayer():ConCommand("use gmod_tool")
 					LocalPlayer():ConCommand("gmod_toolmode "..tool)
+					
+					self.toolpanel.settings.panel:Clear()
+					--self.toolpanel.settings.scroll:Clear()
+					--print(self.toolpanel.settings.scroll)
+
+					--self.toolpanel.settings.scroll.panel:Clear()
+
+					self.toolpanel.settings.controlpanel = vgui.Create("ControlPanel",self.toolpanel.settings.panel)
+					self.toolpanel.settings.controlpanel:Dock(FILL)
+					self.toolpanel.settings.controlpanel:FillViaFunction(spawnmenu.FindTool(tool).CPanelFunction)
+					--self.toolpanel.settings.scroll.panel:SizeToContents()
+					--self.toolpanel.settings.scroll.panel:SetTall(100)
+
+					if self.toolpanel.panel.clicked and IsValid(self.toolpanel.panel.clicked) then
+						self.toolpanel.panel.clicked:SetClicked(false)
+					end	
+					self.toolpanel.panel.clicked = toolbut
+					toolbut:SetClicked(true)
+				end
+				toolbut.PaintOver = function(s,w,h)
+					if self.toolpanel.panel.clicked==s then
+						draw.SimpleText("●","Roboto16-300",10,h/2,color_white,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+					end
 				end
 			end
 		end
 		self.toolpanel.lasttools = BBS:GetMinigameTools()
 	end
+
+	if BBS:GetMinigameTools()==nil then
+		self.toolpanel.panel.nothingfound = true
+		self.toolpanel.settings.panel.nothingfound = true
+	else
+		self.toolpanel.panel.nothingfound = false
+		self.toolpanel.settings.panel.nothingfound = false
+	end	
 end
 
 function PANEL:Close()

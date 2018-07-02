@@ -75,6 +75,7 @@ end)
 	EXPERIMENTAL Hooks (Can be removed/edited later.)
 	bbsprops_playerinitialspawn : Prepares a entities table for recording player's entities.
 	bbsprops_playerdisconnected : Removes entity when its owner disconnects.
+	bbsprops_gravgunpickupallowed : Disallow gravgun pickup for other peoples ents.
 ]]--
 
 hook.Add("PlayerInitialSpawn","bbsprops_playerinitialspawn",function(ply)
@@ -86,6 +87,13 @@ hook.Add("PlayerDisconnected","bbsprops_playerdisconnected",function(ply)
 		ent:Remove()
 	end
 end)
+
+hook.Add("GravGunPickupAllowed","bbsprops_gravgunpickupallowed",function(ply, ent)
+	if not ply:CanTouch(ent) then
+		return false
+	end
+end)
+
 --[[
 	BBS:AllowProps(table propindex)
 	Adds the prop to the allowedprops table and networks to the client
