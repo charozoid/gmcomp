@@ -60,7 +60,7 @@ if CLIENT then
 		bbsminigame_gtowers.pos = net.ReadVector()
 		bbsminigame_gtowers.stopat = CurTime() + BBS:GetMinigame().phases[#BBS:GetMinigame().phases].time -- get the showcase phase's time
 		
-		chat.AddText(Color(17, 161, 17), "[Gravity Towers] ", color_white, bbsminigame_gtowers.ply .. " builded the highest tower!")
+		chat.AddText(Color(17, 161, 17), "[Gravity Towers] ", color_white, bbsminigame_gtowers.ply .. " built the highest tower!")
 	end)
 
 	hook.Add("PostDrawTranslucentRenderables", "bbsminigame_gtowers", function()
@@ -91,7 +91,7 @@ minigame.loadout = {"weapon_physcannon"}
 minigame.phases = {
 	{
 		["name"] = "Build",
-		["time"] = 60,
+		["time"] = 10,
 		["startfunc"] = function()
 			if SERVER then
 				hook.Add("PlayerSpawnProp", "BBSGravTowerSpawn", function(ply, mdl)
@@ -134,6 +134,8 @@ minigame.phases = {
 		["endfunc"] = function()
 			if SERVER then
 				for _, ply in pairs(player.GetAll()) do
+					ply:StripWeapons()
+
 					ply.highestz = -999999 -- to get lowest point before detecting higher one. 0 doesnt work cuz some maps are located at below 0
 					ply.highestprop = NULL
 					ply.highestpos = NULL
@@ -192,15 +194,13 @@ minigame.phases = {
 		end,
 		["endfunc"] = function()
 			if SERVER then
-				for _, ply in pairs(player.GetAll()) do
-					ply:Spawn()
-					ply.highestprop = nil
-				end
+				ply:Spawn()
+				ply.highestprop = nil
+			end
 
 				hook.Remove("PlayerSpawnedProp", "BBSGravTowerSpawn")
 				hook.Remove("PlayerSpawnProp", "BBSGravTowerSpawn")
 				hook.Remove("GravGunPunt", "BBSGravTowerPunt")
-			end
 		end
 	}
 }

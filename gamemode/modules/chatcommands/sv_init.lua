@@ -11,22 +11,27 @@ hook.Add("PlayerSay", "BBSChatCommands", function(sender, string)
 				if v.command == command then
 					local var = string.sub(string, argstart + 1)
 					if not tonumber(var) then
-						local plytbl = player.GetAll()
-						local foundtbl = {}
-						for o,p in pairs(plytbl) do
-							local nick = string.lower(p:Nick())
-							if string.lower(nick) == var then
-								v.func(p)
+						if v.argtype == "Player" then
+							local plytbl = player.GetAll()
+							local foundtbl = {}
+							for o,p in pairs(plytbl) do
+								local nick = string.lower(p:Nick())
+								if nick == var then
+									v.func(p)
+									return ""
+								end
+								if string.find(nick, var) then
+									table.insert(foundtbl, p)
+								end
+								if o==#plytbl and #foundtbl == 0 then
+									--local fstart, fend, string = string.find()
+									BBS.AddChatText(sender, Color(150, 0, 0), "No players found with this name.")
 								return ""
+								end
 							end
-							if string.find(nick, var) then
-								table.insert(foundtbl, p)
-							end
-							if o==#plytbl and #foundtbl == 0 then
-								--local fstart, fend, string = string.find()
-								BBS.AddChatText(sender, Color(150, 0, 0), "No players found with this name.")
-								return ""
-							end
+						elseif v.argtype == "String" then
+							v.func(var)
+							return ""
 						end
 						if #foundtbl > 1 then
 							BBS.AddChatText(sender, Color(150, 0, 0), "Many players found with this name.")
