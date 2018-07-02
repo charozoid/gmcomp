@@ -6,11 +6,14 @@ end
 BBS:AddChatCommand("suicide", function(ply)
 	if SERVER then
 		ply:Kill()
+		BBS.AddChatText(ply, Color(255, 0, 0), "You have killed yourself!")
 	end
 end)
 
 BBS:AddChatCommand("kill", function(target)
-	target:Kill()
+	if SERVER then
+		target:Kill()
+	end
 end)
 
 BBS:AddChatCommand("minigame", function(num)
@@ -22,5 +25,11 @@ end)
 BBS:AddChatCommand("start", function(num)
 	if SERVER then
 		BBS:StartMinigame()
+	end
+end)
+
+BBS:AddChatCommand("reset", function()
+	if SERVER then
+		BBS:ResetTimer()
 	end
 end)
