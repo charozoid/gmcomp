@@ -106,7 +106,7 @@ minigame.phases = {
 					return ret
 				end)
 
-				hook.Add("PlayerSpawnedProp","BBSGravTowerSpawned",function(ply, mdl, ent)
+				hook.Add("PlayerSpawnedProp","BBSGravTowerSpawn",function(ply, mdl, ent)
 					ent:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
 				end)
 
@@ -197,7 +197,7 @@ minigame.phases = {
 					ply.highestprop = nil
 				end
 
-				hook.Remove("PlayerSpawnedProp", "BBSGravTowerSpawned")
+				hook.Remove("PlayerSpawnedProp", "BBSGravTowerSpawn")
 				hook.Remove("PlayerSpawnProp", "BBSGravTowerSpawn")
 				hook.Remove("GravGunPunt", "BBSGravTowerPunt")
 			end
